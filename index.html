@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AUF | Geradores</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <header>
+
+        <div class="eyebrow">
+            Até o Último Filtro // Ferramentas do Mestre
+        </div>
+
+        <h1>
+            GERADORES AUF
+        </h1>
+
+        <p class="subtitle">
+            Ferramentas para criação rápida durante a sessão.
+        </p>
+
+    </header>
+
+
+    <!-- ABAS -->
+
+    <nav class="tabs">
+
+        <button
+            class="tab active"
+            onclick="mostrarAba('missoes', this)"
+        >
+            Missões
+        </button>
+
+
+        <button
+            class="tab"
+            onclick="mostrarAba('mercadorias', this)"
+        >
+            Mercadorias
+        </button>
+
+    </nav>
+
+
+    <!-- ================================================= -->
+    <!-- MISSÕES -->
+    <!-- ================================================= -->
+
+    <section
+        id="missoes"
+        class="aba active"
+    >
+
+        <div class="layout">
+
+
+            <main class="panel">
+
+                <div class="panel-title">
+                    Trabalho gerado
+                </div>
+
+
+                <div
+                    id="resultadoMissao"
+                    class="result"
+                >
+
+                    <div class="empty">
+
+                        [ AGUARDANDO ROLAGEM ]
+
+                        <br>
+
+                        Clique em "Gerar missão".
+
+                    </div>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button
+                        class="primary"
+                        onclick="gerarMissao()"
+                    >
+                        Gerar missão
+                    </button>
+
+
+                    <button
+                        onclick="copiarMissao()"
+                    >
+                        Copiar resultado
+                    </button>
+
+
+                    <button
+                        onclick="salvarMissao()"
+                    >
+                        Salvar
+                    </button>
+
+
+                    <button
+                        onclick="limparMissao()"
+                    >
+                        Limpar
+                    </button>
+
+                </div>
+
+            </main>
+
+
+            <aside class="panel">
+
+                <div class="panel-title">
+                    Rolagens utilizadas
+                </div>
+
+
+                <div class="dice-table">
+
+                    <div class="dice-row">
+
+                        <span>
+                            TIPO
+                        </span>
+
+                        <span>
+                            1d6
+                        </span>
+
+                    </div>
+
+
+                    <div class="dice-row">
+
+                        <span>
+                            MOTIVO
+                        </span>
+
+                        <span>
+                            1d6
+                        </span>
+
+                    </div>
+
+
+                    <div class="dice-row">
+
+                        <span>
+                            CONSEQUÊNCIA
+                        </span>
+
+                        <span>
+                            1d6
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="history">
+
+                    <div class="panel-title">
+                        Histórico
+                    </div>
+
+
+                    <div id="historico">
+
+                        <div class="muted">
+                            Nenhuma missão salva.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- MERCADORIAS -->
+    <!-- ================================================= -->
+
+    <section
+        id="mercadorias"
+        class="aba"
+    >
+
+        <div class="layout">
+
+
+            <main class="panel">
+
+                <div class="panel-title">
+                    Estoque do vendedor
+                </div>
+
+
+                <div
+                    id="resultadoMercadorias"
+                    class="result"
+                >
+
+                    <div class="empty">
+
+                        [ ESTOQUE VAZIO ]
+
+                        <br>
+
+                        Clique em "Gerar estoque".
+
+                    </div>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button
+                        class="primary"
+                        onclick="gerarEstoque()"
+                    >
+                        Gerar estoque
+                    </button>
+
+
+                    <button
+                        onclick="copiarEstoque()"
+                    >
+                        Copiar resultado
+                    </button>
+
+
+                    <button
+                        onclick="limparEstoque()"
+                    >
+                        Limpar
+                    </button>
+
+                </div>
+
+            </main>
+
+
+            <aside class="panel">
+
+                <div class="panel-title">
+                    Sistema de estoque
+                </div>
+
+
+                <div class="stock-info">
+
+                    <div class="info-box">
+
+                        <strong>
+                            8d4
+                        </strong>
+
+                        <span>
+                            Define a categoria de cada espaço.
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>
+                            1d6
+                        </strong>
+
+                        <span>
+                            Define a mercadoria dentro da categoria.
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>
+                            1d4
+                        </strong>
+
+                        <span>
+                            Usado adicionalmente para componentes ritualísticos.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-title special-title">
+                    Mercadorias especiais
+                </div>
+
+
+                <div class="special">
+
+                    <label>
+
+                        Objetos Paranormais
+
+                        <input
+                            id="objetosParanormais"
+                            type="text"
+                            placeholder="Definido pelo Mestre"
+                        >
+
+                    </label>
+
+
+                    <label>
+
+                        Vales Filtros
+
+                        <input
+                            id="valesFiltros"
+                            type="text"
+                            placeholder="Definido pelo Mestre"
+                        >
+
+                    </label>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
