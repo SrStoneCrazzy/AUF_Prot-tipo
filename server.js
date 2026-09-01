@@ -733,6 +733,359 @@ const servidor = http.createServer((req, res) => {
         return;
     }
 
+    // ==========================================
+// CRIATURAS - BUSCAR
+// ==========================================
+
+if (
+    req.method === "GET" &&
+    req.url === "/api/criaturas"
+) {
+
+    db.query(
+        "SELECT * FROM criaturas",
+        (erro, resultados) => {
+
+            if (erro) {
+
+                console.error(
+                    "Erro ao buscar criaturas:",
+                    erro
+                );
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao buscar criaturas"
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(
+                JSON.stringify(resultados)
+            );
+        }
+    );
+
+    return;
+}
+
+
+// ==========================================
+// CRIATURAS - CRIAR
+// ==========================================
+
+if (
+    req.method === "POST" &&
+    req.url === "/api/criaturas"
+) {
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const sql = `
+                INSERT INTO criaturas
+                (
+                    nome,
+                    elemento,
+                    elemento_secundario,
+                    vd,
+                    vida,
+                    defesa,
+                    deslocamento
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `;
+
+            db.query(
+                sql,
+                [
+                    dados.nome,
+                    dados.elemento,
+                    dados.elemento_secundario,
+                    dados.vd,
+                    dados.vida,
+                    dados.defesa,
+                    dados.deslocamento
+                ],
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(
+                            "Erro ao criar criatura:",
+                            erro
+                        );
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao criar criatura"
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(201, {
+                        "Content-Type":
+                            "application/json"
+                    });
+
+                    res.end(JSON.stringify({
+                        id:
+                            resultado.insertId,
+                        nome:
+                            dados.nome,
+                        elemento:
+                            dados.elemento,
+                        elemento_secundario:
+                            dados.elemento_secundario,
+                        vd:
+                            dados.vd,
+                        vida:
+                            dados.vida,
+                        defesa:
+                            dados.defesa,
+                        deslocamento:
+                            dados.deslocamento
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos"
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// ==========================================
+// CRIATURAS - EDITAR
+// ==========================================
+
+if (
+    req.method === "PUT" &&
+    req.url.startsWith("/api/criaturas/")
+) {
+
+    const id =
+        req.url.split("/")[3];
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const sql = `
+                UPDATE criaturas
+                SET
+                    nome = ?,
+                    elemento = ?,
+                    elemento_secundario = ?,
+                    vd = ?,
+                    vida = ?,
+                    defesa = ?,
+                    deslocamento = ?
+                WHERE id = ?
+            `;
+
+            db.query(
+                sql,
+                [
+                    dados.nome,
+                    dados.elemento,
+                    dados.elemento_secundario,
+                    dados.vd,
+                    dados.vida,
+                    dados.defesa,
+                    dados.deslocamento,
+                    id
+                ],
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(
+                            "Erro ao editar criatura:",
+                            erro
+                        );
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao editar criatura"
+                        }));
+
+                        return;
+                    }
+
+                    if (
+                        resultado.affectedRows === 0
+                    ) {
+
+                        res.writeHead(404, {
+                            "Content-Type":
+                                "application/json"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Criatura não encontrada"
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(200, {
+                        "Content-Type":
+                            "application/json"
+                    });
+
+                    res.end(JSON.stringify({
+                        mensagem:
+                            "Criatura editada com sucesso"
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos"
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// ==========================================
+// CRIATURAS - EXCLUIR
+// ==========================================
+
+if (
+    req.method === "DELETE" &&
+    req.url.startsWith("/api/criaturas/")
+) {
+
+    const id =
+        req.url.split("/")[3];
+
+    db.query(
+        "DELETE FROM criaturas WHERE id = ?",
+        [id],
+        (erro, resultado) => {
+
+            if (erro) {
+
+                console.error(
+                    "Erro ao excluir criatura:",
+                    erro
+                );
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao excluir criatura"
+                }));
+
+                return;
+            }
+
+            if (
+                resultado.affectedRows === 0
+            ) {
+
+                res.writeHead(404, {
+                    "Content-Type":
+                        "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Criatura não encontrada"
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(JSON.stringify({
+                mensagem:
+                    "Criatura excluída com sucesso"
+            }));
+        }
+    );
+
+    return;
+}
+
 
     // ==========================================
     // ROTA NÃO ENCONTRADA

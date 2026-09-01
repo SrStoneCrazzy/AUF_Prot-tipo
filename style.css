@@ -2665,3 +2665,598 @@ option {
     }
 
 }
+
+/* =========================================================
+   CRIATURAS
+   ========================================================= */
+
+#criaturas .layout {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+
+/* =========================================================
+   FORMULÁRIO
+   ========================================================= */
+
+#form-criatura {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+#form-criatura label {
+    margin-top: 8px;
+    color: #bca8c9;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+
+#form-criatura input {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+
+    padding: 11px 12px;
+
+    background: #0d0912;
+    border: 1px solid #382044;
+
+    color: #f4edf7;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+#form-criatura input::placeholder {
+    color: #6f6277;
+}
+
+
+#form-criatura input:focus {
+    border-color: #ff1493;
+
+    background: #110b16;
+
+    box-shadow:
+        0 0 0 1px #ff1493,
+        0 0 12px rgba(255, 20, 147, 0.18);
+}
+
+
+/* =========================================================
+   CAMPOS NUMÉRICOS
+   ========================================================= */
+
+.criatura-campos {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-top: 4px;
+}
+
+
+.criatura-campos > div {
+    min-width: 0;
+}
+
+
+.criatura-campos label {
+    display: block;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.criatura-campos input {
+    width: 100%;
+}
+
+
+/* =========================================================
+   BOTÃO PRINCIPAL
+   ========================================================= */
+
+#form-criatura .primary {
+    align-self: flex-start;
+
+    margin-top: 12px;
+
+    padding: 11px 20px;
+
+    border: 1px solid #ff1493;
+
+    background:
+        linear-gradient(
+            135deg,
+            #70105c,
+            #3b124b
+        );
+
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: bold;
+
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.1s ease;
+}
+
+
+#form-criatura .primary:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #a5147b,
+            #571765
+        );
+
+    box-shadow:
+        0 0 12px rgba(255, 20, 147, 0.3);
+}
+
+
+#form-criatura .primary:active {
+    transform: translateY(1px);
+}
+
+
+/* =========================================================
+   PESQUISA
+   ========================================================= */
+
+#pesquisa-criatura {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+
+    margin-bottom: 14px;
+
+    padding: 11px 12px;
+
+    background: #0d0912;
+
+    border: 1px solid #382044;
+
+    color: #f4edf7;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+#pesquisa-criatura::placeholder {
+    color: #6f6277;
+}
+
+
+#pesquisa-criatura:focus {
+    border-color: #ff1493;
+
+    box-shadow:
+        0 0 0 1px #ff1493,
+        0 0 12px rgba(255, 20, 147, 0.18);
+}
+
+
+/* =========================================================
+   LISTA
+   ========================================================= */
+
+#lista-criaturas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    max-height: 600px;
+
+    overflow-y: auto;
+
+    padding-right: 4px;
+}
+
+
+/* =========================================================
+   CARTÃO DA CRIATURA
+   ========================================================= */
+
+.criatura-item {
+    position: relative;
+
+    padding: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(35, 19, 43, 0.95),
+            rgba(18, 10, 24, 0.95)
+        );
+
+    border: 1px solid #34203d;
+
+    border-left: 2px solid #ff1493;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+.criatura-item:hover {
+    border-color: #6c285f;
+
+    box-shadow:
+        0 0 14px rgba(255, 20, 147, 0.09);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   CABEÇALHO DO CARTÃO
+   ========================================================= */
+
+.criatura-cabecalho {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+}
+
+
+.criatura-nome {
+    min-width: 0;
+
+    color: #ffffff;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    letter-spacing: 0.5px;
+
+    word-break: break-word;
+}
+
+
+.criatura-vd {
+    flex-shrink: 0;
+
+    padding: 5px 8px;
+
+    border: 1px solid #5a214f;
+
+    background: #210f22;
+
+    color: #ff66b7;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    letter-spacing: 0.7px;
+}
+
+
+/* =========================================================
+   ELEMENTOS
+   ========================================================= */
+
+.criatura-elementos {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-bottom: 13px;
+}
+
+
+.criatura-elemento {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 8px;
+
+    border: 1px solid #422548;
+
+    background: #140b19;
+
+    color: #cdbbd2;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    letter-spacing: 0.6px;
+
+    text-transform: uppercase;
+}
+
+
+.criatura-elemento.secundario {
+    border-color: #30203a;
+
+    color: #918198;
+}
+
+
+/* =========================================================
+   ESTATÍSTICAS
+   ========================================================= */
+
+.criatura-status {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 7px;
+
+    margin-bottom: 13px;
+}
+
+
+.criatura-status-box {
+    padding: 9px 7px;
+
+    border: 1px solid #2d1b35;
+
+    background: #100a15;
+
+    text-align: center;
+}
+
+
+.criatura-status-label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #716276;
+
+    font-size: 9px;
+    font-weight: bold;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+}
+
+
+.criatura-status-valor {
+    display: block;
+
+    color: #f2e9f4;
+
+    font-size: 14px;
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   DESLOCAMENTO
+   ========================================================= */
+
+.criatura-deslocamento {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #291a31;
+
+    color: #a996ad;
+
+    font-size: 11px;
+}
+
+
+.criatura-deslocamento strong {
+    color: #e8ddea;
+}
+
+
+/* =========================================================
+   AÇÕES
+   ========================================================= */
+
+.criatura-acoes {
+    display: flex;
+
+    gap: 7px;
+
+    margin-top: 13px;
+}
+
+
+.criatura-acoes button {
+    padding: 7px 11px;
+
+    border: 1px solid #41234d;
+
+    background: #150c1b;
+
+    color: #cbbbd1;
+
+    font-family: inherit;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    letter-spacing: 0.5px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.criatura-acoes button:hover {
+    border-color: #ff1493;
+
+    background: #32112e;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   ESTADO VAZIO
+   ========================================================= */
+
+#lista-criaturas .muted {
+    padding: 22px;
+
+    border: 1px dashed #302039;
+
+    color: #6f6277;
+
+    text-align: center;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   SCROLL
+   ========================================================= */
+
+#lista-criaturas::-webkit-scrollbar {
+    width: 5px;
+}
+
+
+#lista-criaturas::-webkit-scrollbar-track {
+    background: #0a0710;
+}
+
+
+#lista-criaturas::-webkit-scrollbar-thumb {
+    background: #4d1748;
+}
+
+
+#lista-criaturas::-webkit-scrollbar-thumb:hover {
+    background: #ff1493;
+}
+
+
+/* =========================================================
+   MODO DE EDIÇÃO
+   ========================================================= */
+
+#form-criatura.editando {
+    border-left: 2px solid #ff1493;
+
+    padding-left: 12px;
+}
+
+
+#form-criatura.editando::before {
+    content: "Editando criatura";
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #ff66b7;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    #criaturas .layout {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .criatura-campos {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .criatura-status {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 420px) {
+
+    .criatura-campos {
+        grid-template-columns: 1fr;
+    }
+
+    .criatura-cabecalho {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}

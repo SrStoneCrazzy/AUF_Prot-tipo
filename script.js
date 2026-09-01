@@ -2893,3 +2893,885 @@ if (
 
     inicializarAnotacoes();
 }
+
+// ======================================================
+// CRIATURAS
+// ======================================================
+
+let criaturaEditando = null;
+
+let criaturasCache = [];
+
+
+// ======================================================
+// CARREGAR CRIATURAS
+// ======================================================
+
+async function carregarCriaturas() {
+
+    const lista =
+        document.getElementById(
+            "lista-criaturas"
+        );
+
+    if (!lista) {
+        return;
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+                "/api/criaturas"
+            );
+
+        if (!resposta.ok) {
+            throw new Error(
+                "Erro ao buscar criaturas"
+            );
+        }
+
+        const criaturas =
+            await resposta.json();
+
+        criaturasCache =
+            criaturas;
+
+        renderizarCriaturas(
+            criaturas
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar criaturas:",
+            erro
+        );
+
+        lista.innerHTML = `
+            <div class="muted">
+                Erro ao carregar criaturas.
+            </div>
+        `;
+    }
+}
+
+
+// ======================================================
+// RENDERIZAR CRIATURAS
+// ======================================================
+
+function renderizarCriaturas(
+    criaturas
+) {
+
+    const lista =
+        document.getElementById(
+            "lista-criaturas"
+        );
+
+    if (!lista) {
+        return;
+    }
+
+    lista.innerHTML = "";
+
+
+    if (criaturas.length === 0) {
+
+        lista.innerHTML = `
+            <div class="muted">
+                Nenhuma criatura cadastrada.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    criaturas.forEach(criatura => {
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+        item.className =
+            "criatura-item";
+
+
+        // ------------------------------------------
+        // CABEÇALHO
+        // ------------------------------------------
+
+        const cabecalho =
+            document.createElement(
+                "div"
+            );
+
+        cabecalho.className =
+            "criatura-cabecalho";
+
+
+        const nome =
+            document.createElement(
+                "div"
+            );
+
+        nome.className =
+            "criatura-nome";
+
+        nome.textContent =
+            criatura.nome;
+
+
+        const vd =
+            document.createElement(
+                "div"
+            );
+
+        vd.className =
+            "criatura-vd";
+
+        vd.textContent =
+            `VD ${criatura.vd}`;
+
+
+        cabecalho.appendChild(
+            nome
+        );
+
+        cabecalho.appendChild(
+            vd
+        );
+
+
+        // ------------------------------------------
+        // ELEMENTOS
+        // ------------------------------------------
+
+        const elementos =
+            document.createElement(
+                "div"
+            );
+
+        elementos.className =
+            "criatura-elementos";
+
+
+        const elemento =
+            document.createElement(
+                "span"
+            );
+
+        elemento.className =
+            "criatura-elemento";
+
+        elemento.textContent =
+            criatura.elemento;
+
+
+        elementos.appendChild(
+            elemento
+        );
+
+
+        if (
+            criatura.elemento_secundario
+        ) {
+
+            const secundario =
+                document.createElement(
+                    "span"
+                );
+
+            secundario.className =
+                "criatura-elemento secundario";
+
+            secundario.textContent =
+                criatura.elemento_secundario;
+
+
+            elementos.appendChild(
+                secundario
+            );
+        }
+
+
+        // ------------------------------------------
+        // STATUS
+        // ------------------------------------------
+
+        const status =
+            document.createElement(
+                "div"
+            );
+
+        status.className =
+            "criatura-status";
+
+
+        function criarStatus(
+            label,
+            valor
+        ) {
+
+            const box =
+                document.createElement(
+                    "div"
+                );
+
+            box.className =
+                "criatura-status-box";
+
+
+            const nomeStatus =
+                document.createElement(
+                    "span"
+                );
+
+            nomeStatus.className =
+                "criatura-status-label";
+
+            nomeStatus.textContent =
+                label;
+
+
+            const valorStatus =
+                document.createElement(
+                    "span"
+                );
+
+            valorStatus.className =
+                "criatura-status-valor";
+
+            valorStatus.textContent =
+                valor;
+
+
+            box.appendChild(
+                nomeStatus
+            );
+
+            box.appendChild(
+                valorStatus
+            );
+
+
+            return box;
+        }
+
+
+        status.appendChild(
+            criarStatus(
+                "Vida",
+                criatura.vida
+            )
+        );
+
+        status.appendChild(
+            criarStatus(
+                "Defesa",
+                criatura.defesa
+            )
+        );
+
+        status.appendChild(
+            criarStatus(
+                "Deslocamento",
+                criatura.deslocamento
+            )
+        );
+
+
+        // ------------------------------------------
+        // AÇÕES
+        // ------------------------------------------
+
+        const acoes =
+            document.createElement(
+                "div"
+            );
+
+        acoes.className =
+            "criatura-acoes";
+
+
+        const botaoEditar =
+            document.createElement(
+                "button"
+            );
+
+        botaoEditar.textContent =
+            "Editar";
+
+        botaoEditar.addEventListener(
+            "click",
+            () => {
+
+                editarCriatura(
+                    criatura.id
+                );
+
+            }
+        );
+
+
+        const botaoExcluir =
+            document.createElement(
+                "button"
+            );
+
+        botaoExcluir.textContent =
+            "Excluir";
+
+        botaoExcluir.addEventListener(
+            "click",
+            () => {
+
+                excluirCriatura(
+                    criatura.id
+                );
+
+            }
+        );
+
+
+        acoes.appendChild(
+            botaoEditar
+        );
+
+        acoes.appendChild(
+            botaoExcluir
+        );
+
+
+        // ------------------------------------------
+        // MONTAR CARTÃO
+        // ------------------------------------------
+
+        item.appendChild(
+            cabecalho
+        );
+
+        item.appendChild(
+            elementos
+        );
+
+        item.appendChild(
+            status
+        );
+
+        item.appendChild(
+            acoes
+        );
+
+
+        lista.appendChild(
+            item
+        );
+    });
+}
+
+
+// ======================================================
+// SALVAR / EDITAR CRIATURA
+// ======================================================
+
+async function salvarCriatura(
+    evento
+) {
+
+    evento.preventDefault();
+
+
+    const nome =
+        document.getElementById(
+            "nome-criatura"
+        ).value.trim();
+
+
+    const elemento =
+        document.getElementById(
+            "elemento-criatura"
+        ).value.trim();
+
+
+    const elementoSecundario =
+        document.getElementById(
+            "elemento-secundario-criatura"
+        ).value.trim();
+
+
+    const vd =
+        document.getElementById(
+            "vd-criatura"
+        ).value;
+
+
+    const vida =
+        document.getElementById(
+            "vida-criatura"
+        ).value;
+
+
+    const defesa =
+        document.getElementById(
+            "defesa-criatura"
+        ).value;
+
+
+    const deslocamento =
+        document.getElementById(
+            "deslocamento-criatura"
+        ).value.trim();
+
+
+    if (
+        !nome ||
+        !elemento ||
+        !vd ||
+        !vida ||
+        !defesa ||
+        !deslocamento
+    ) {
+
+        alert(
+            "Preencha todos os campos obrigatórios."
+        );
+
+        return;
+    }
+
+
+    const editando =
+        criaturaEditando !== null;
+
+
+    const url =
+        editando
+            ? `/api/criaturas/${criaturaEditando}`
+            : "/api/criaturas";
+
+
+    const metodo =
+        editando
+            ? "PUT"
+            : "POST";
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                url,
+                {
+                    method: metodo,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        nome:
+                            nome,
+
+                        elemento:
+                            elemento,
+
+                        elemento_secundario:
+                            elementoSecundario,
+
+                        vd:
+                            Number(vd),
+
+                        vida:
+                            Number(vida),
+
+                        defesa:
+                            Number(defesa),
+
+                        deslocamento:
+                            deslocamento
+                    })
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            const erro =
+                await resposta.json()
+                    .catch(
+                        () => null
+                    );
+
+            throw new Error(
+                erro?.erro ||
+                "Erro ao salvar criatura"
+            );
+        }
+
+
+        limparFormularioCriatura();
+
+        await carregarCriaturas();
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar criatura:",
+            erro
+        );
+
+        alert(
+            "Não foi possível salvar a criatura."
+        );
+    }
+}
+
+
+// ======================================================
+// EDITAR CRIATURA
+// ======================================================
+
+function editarCriatura(
+    id
+) {
+
+    const criatura =
+        criaturasCache.find(
+            item =>
+                Number(item.id) ===
+                Number(id)
+        );
+
+
+    if (!criatura) {
+        return;
+    }
+
+
+    document.getElementById(
+        "nome-criatura"
+    ).value =
+        criatura.nome;
+
+
+    document.getElementById(
+        "elemento-criatura"
+    ).value =
+        criatura.elemento;
+
+
+    document.getElementById(
+        "elemento-secundario-criatura"
+    ).value =
+        criatura.elemento_secundario || "";
+
+
+    document.getElementById(
+        "vd-criatura"
+    ).value =
+        criatura.vd;
+
+
+    document.getElementById(
+        "vida-criatura"
+    ).value =
+        criatura.vida;
+
+
+    document.getElementById(
+        "defesa-criatura"
+    ).value =
+        criatura.defesa;
+
+
+    document.getElementById(
+        "deslocamento-criatura"
+    ).value =
+        criatura.deslocamento;
+
+
+    criaturaEditando =
+        Number(criatura.id);
+
+
+    const formulario =
+        document.getElementById(
+            "form-criatura"
+        );
+
+
+    if (formulario) {
+
+        formulario.classList.add(
+            "editando"
+        );
+    }
+
+
+    const botao =
+        formulario?.querySelector(
+            "button[type='submit']"
+        );
+
+
+    if (botao) {
+
+        botao.textContent =
+            "Salvar alterações";
+    }
+
+
+    document.getElementById(
+        "nome-criatura"
+    ).focus();
+}
+
+
+// ======================================================
+// LIMPAR FORMULÁRIO
+// ======================================================
+
+function limparFormularioCriatura() {
+
+    const formulario =
+        document.getElementById(
+            "form-criatura"
+        );
+
+
+    if (formulario) {
+
+        formulario.reset();
+
+        formulario.classList.remove(
+            "editando"
+        );
+    }
+
+
+    criaturaEditando =
+        null;
+
+
+    const botao =
+        formulario?.querySelector(
+            "button[type='submit']"
+        );
+
+
+    if (botao) {
+
+        botao.textContent =
+            "Salvar criatura";
+    }
+}
+
+
+// ======================================================
+// EXCLUIR CRIATURA
+// ======================================================
+
+async function excluirCriatura(
+    id
+) {
+
+    const confirmar =
+        confirm(
+            "Deseja realmente excluir esta criatura?"
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `/api/criaturas/${id}`,
+                {
+                    method:
+                        "DELETE"
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            const erro =
+                await resposta.json()
+                    .catch(
+                        () => null
+                    );
+
+            throw new Error(
+                erro?.erro ||
+                "Erro ao excluir criatura"
+            );
+        }
+
+
+        if (
+            criaturaEditando !== null &&
+            Number(criaturaEditando) ===
+                Number(id)
+        ) {
+
+            limparFormularioCriatura();
+        }
+
+
+        await carregarCriaturas();
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao excluir criatura:",
+            erro
+        );
+
+        alert(
+            "Não foi possível excluir a criatura."
+        );
+    }
+}
+
+
+// ======================================================
+// PESQUISAR CRIATURAS
+// ======================================================
+
+function pesquisarCriaturas() {
+
+    const campo =
+        document.getElementById(
+            "pesquisa-criatura"
+        );
+
+
+    if (!campo) {
+        return;
+    }
+
+
+    const pesquisa =
+        campo.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!pesquisa) {
+
+        renderizarCriaturas(
+            criaturasCache
+        );
+
+        return;
+    }
+
+
+    const resultados =
+        criaturasCache.filter(
+            criatura => {
+
+                const nome =
+                    String(
+                        criatura.nome || ""
+                    ).toLowerCase();
+
+
+                const elemento =
+                    String(
+                        criatura.elemento || ""
+                    ).toLowerCase();
+
+
+                const secundario =
+                    String(
+                        criatura.elemento_secundario || ""
+                    ).toLowerCase();
+
+
+                return (
+                    nome.includes(pesquisa) ||
+                    elemento.includes(pesquisa) ||
+                    secundario.includes(pesquisa)
+                );
+            }
+        );
+
+
+    renderizarCriaturas(
+        resultados
+    );
+}
+
+
+// ======================================================
+// INICIALIZAR CRIATURAS
+// ======================================================
+
+function inicializarCriaturas() {
+
+    const formulario =
+        document.getElementById(
+            "form-criatura"
+        );
+
+
+    if (formulario) {
+
+        formulario.addEventListener(
+            "submit",
+            salvarCriatura
+        );
+    }
+
+
+    const pesquisa =
+        document.getElementById(
+            "pesquisa-criatura"
+        );
+
+
+    if (pesquisa) {
+
+        pesquisa.addEventListener(
+            "input",
+            pesquisarCriaturas
+        );
+    }
+
+
+    carregarCriaturas();
+}
+
+
+// ======================================================
+// INICIAR
+// ======================================================
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        inicializarCriaturas
+    );
+
+} else {
+
+    inicializarCriaturas();
+}
