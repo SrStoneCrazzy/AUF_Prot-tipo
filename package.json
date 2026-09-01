@@ -1,0 +1,26 @@
+{
+  "name": "auf_prot-tipo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SrStoneCrazzy/AUF_Prot-tipo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/SrStoneCrazzy/AUF_Prot-tipo/issues"
+  },
+  "homepage": "https://github.com/SrStoneCrazzy/AUF_Prot-tipo#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "mysql2": "^3.24.2",
+    "openai": "^7.8.0"
+  }
+}

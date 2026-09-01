@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -17,13 +16,23 @@
         href="style.css"
     >
 
+    <!-- Three.js -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.module.js"
+        }
+    }
+    </script>
 </head>
-
 
 <body>
 
 <div class="container">
 
+    <!-- ================================================= -->
+    <!-- CABEÇALHO -->
+    <!-- ================================================= -->
 
     <header>
 
@@ -32,7 +41,7 @@
         </div>
 
         <h1>
-            GERADORES AUF
+            CENTRAL DE ATÉ O ÚLTIMO FILTRO
         </h1>
 
         <p class="subtitle">
@@ -42,7 +51,9 @@
     </header>
 
 
+    <!-- ================================================= -->
     <!-- ABAS -->
+    <!-- ================================================= -->
 
     <nav class="tabs">
 
@@ -53,12 +64,32 @@
             Missões
         </button>
 
-
         <button
             class="tab"
             onclick="mostrarAba('mercadorias', this)"
         >
             Mercadorias
+        </button>
+
+        <button
+            class="tab"
+            onclick="mostrarAba('npcs', this)"
+        >
+            NPCs
+        </button>
+
+        <button
+            class="tab"
+            onclick="mostrarAba('gerador-npc', this)"
+        >
+            Gerador de NPC
+        </button>
+
+        <button
+            class="tab"
+            onclick="mostrarAba('rolador', this)"
+        >
+            Rolador
         </button>
 
     </nav>
@@ -75,13 +106,11 @@
 
         <div class="layout">
 
-
             <main class="panel">
 
                 <div class="panel-title">
                     Trabalho gerado
                 </div>
-
 
                 <div
                     id="resultadoMissao"
@@ -89,17 +118,12 @@
                 >
 
                     <div class="empty">
-
                         [ AGUARDANDO ROLAGEM ]
-
                         <br>
-
                         Clique em "Gerar missão".
-
                     </div>
 
                 </div>
-
 
                 <div class="buttons">
 
@@ -110,20 +134,17 @@
                         Gerar missão
                     </button>
 
-
                     <button
                         onclick="copiarMissao()"
                     >
                         Copiar resultado
                     </button>
 
-
                     <button
                         onclick="salvarMissao()"
                     >
                         Salvar
                     </button>
-
 
                     <button
                         onclick="limparMissao()"
@@ -142,45 +163,21 @@
                     Rolagens utilizadas
                 </div>
 
-
                 <div class="dice-table">
 
                     <div class="dice-row">
-
-                        <span>
-                            TIPO
-                        </span>
-
-                        <span>
-                            1d6
-                        </span>
-
+                        <span>TIPO</span>
+                        <span>1d6</span>
                     </div>
 
-
                     <div class="dice-row">
-
-                        <span>
-                            MOTIVO
-                        </span>
-
-                        <span>
-                            1d6
-                        </span>
-
+                        <span>MOTIVO</span>
+                        <span>1d6</span>
                     </div>
 
-
                     <div class="dice-row">
-
-                        <span>
-                            CONSEQUÊNCIA
-                        </span>
-
-                        <span>
-                            1d6
-                        </span>
-
+                        <span>CONSEQUÊNCIA</span>
+                        <span>1d6</span>
                     </div>
 
                 </div>
@@ -191,7 +188,6 @@
                     <div class="panel-title">
                         Histórico
                     </div>
-
 
                     <div id="historico">
 
@@ -221,13 +217,11 @@
 
         <div class="layout">
 
-
             <main class="panel">
 
                 <div class="panel-title">
                     Estoque do vendedor
                 </div>
-
 
                 <div
                     id="resultadoMercadorias"
@@ -235,17 +229,12 @@
                 >
 
                     <div class="empty">
-
                         [ ESTOQUE VAZIO ]
-
                         <br>
-
                         Clique em "Gerar estoque".
-
                     </div>
 
                 </div>
-
 
                 <div class="buttons">
 
@@ -256,13 +245,11 @@
                         Gerar estoque
                     </button>
 
-
                     <button
                         onclick="copiarEstoque()"
                     >
                         Copiar resultado
                     </button>
-
 
                     <button
                         onclick="limparEstoque()"
@@ -280,7 +267,6 @@
                 <div class="panel-title">
                     Sistema de estoque
                 </div>
-
 
                 <div class="stock-info">
 
@@ -365,11 +351,491 @@
 
     </section>
 
+
+    <!-- ================================================= -->
+    <!-- NPCs -->
+    <!-- ================================================= -->
+
+    <section
+        id="npcs"
+        class="aba"
+    >
+
+        <div class="layout">
+
+            <main class="panel">
+
+                <div class="panel-title">
+                    Adicionar NPC
+                </div>
+
+
+                <form id="form-npc">
+
+                    <label for="nome">
+                        Nome
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Nome do NPC"
+                        required
+                    >
+
+
+                    <label for="faccao">
+                        Facção
+                    </label>
+
+                    <input
+                        type="text"
+                        id="faccao"
+                        name="faccao"
+                        placeholder="Facção"
+                    >
+
+
+                    <label for="informacao">
+                        Informação
+                    </label>
+
+                    <textarea
+                        id="informacao"
+                        name="informacao"
+                        placeholder="Informações sobre o NPC"
+                    ></textarea>
+
+
+                    <button
+                        type="submit"
+                        class="primary"
+                    >
+                        Adicionar NPC
+                    </button>
+
+                </form>
+
+
+                <div class="panel-title">
+                    NPCs cadastrados
+                </div>
+
+
+                <input
+                    type="text"
+                    id="pesquisa-npc"
+                    placeholder="Pesquisar por nome ou facção..."
+                >
+
+
+                <div id="lista-npcs">
+
+                    <div class="muted">
+                        Carregando NPCs...
+                    </div>
+
+                </div>
+
+            </main>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- GERADOR DE NPC -->
+    <!-- ================================================= -->
+
+    <section
+        id="gerador-npc"
+        class="aba"
+    >
+
+        <div class="layout">
+
+            <main class="panel">
+
+                <div class="panel-title">
+                    Gerador de NPC Genérico
+                </div>
+
+
+                <div class="special">
+
+                    <!-- FACÇÃO -->
+
+                    <label>
+
+                        Facção
+
+                        <select id="npc-faccao">
+
+                            <option value="">
+                                Aleatória
+                            </option>
+
+                            <option value="Aliança">
+                                Aliança
+                            </option>
+
+                            <option value="Bastilha">
+                                Bastilha
+                            </option>
+
+                            <option value="Filhos de Deus">
+                                Filhos de Deus
+                            </option>
+
+                            <option value="Matilha">
+                                Matilha
+                            </option>
+
+                            <option value="Independente">
+                                Independente
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <!-- GÊNERO -->
+
+                    <label>
+
+                        Gênero
+
+                        <select id="npc-genero">
+
+                            <option value="">
+                                Aleatório
+                            </option>
+
+                            <option value="Masculino">
+                                Masculino
+                            </option>
+
+                            <option value="Feminino">
+                                Feminino
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <!-- SEXUALIDADE -->
+
+                    <label>
+
+                        Sexualidade
+
+                        <select id="npc-sexualidade">
+
+                            <option value="">
+                                Aleatória
+                            </option>
+
+                            <option value="Heterossexual">
+                                Heterossexual
+                            </option>
+
+                            <option value="Homossexual">
+                                Homossexual
+                            </option>
+
+                            <option value="Bissexual">
+                                Bissexual
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <!-- IDADE -->
+
+                    <label>
+
+                        Idade
+
+                        <select id="npc-idade">
+
+                            <option value="">
+                                Aleatória
+                            </option>
+
+                            <option value="Jovem">
+                                Jovem
+                            </option>
+
+                            <option value="Adulto">
+                                Adulto
+                            </option>
+
+                            <option value="Idoso">
+                                Idoso
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <!-- PERSONALIDADE -->
+
+                    <label>
+
+                        Personalidade
+
+                        <input
+                            type="text"
+                            id="npc-personalidade"
+                            placeholder="Aleatória"
+                        >
+
+                    </label>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button
+                        class="primary"
+                        onclick="gerarNPCIA()"
+                    >
+                        Gerar NPC
+                    </button>
+
+                </div>
+
+            </main>
+
+
+            <aside class="panel">
+
+                <div class="panel-title">
+                    NPC gerado
+                </div>
+
+
+                <div
+                    id="resultadoNPCIA"
+                    class="result"
+                >
+
+                    <div class="empty">
+                        [ AGUARDANDO GERAÇÃO ]
+                        <br>
+                        Configure os parâmetros e gere um NPC.
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ROLADOR -->
+    <!-- ================================================= -->
+
+    <section
+        id="rolador"
+        class="aba"
+    >
+
+        <div class="layout">
+
+            <main class="panel">
+
+                <div class="panel-title">
+                    Rolador de Dados
+                </div>
+
+
+                <!-- =============================== -->
+                <!-- SELETOR DE DADOS -->
+                <!-- =============================== -->
+
+                <div class="dice-selector">
+
+                    <button
+                        onclick="selecionarDado(4)"
+                    >
+                        d4
+                    </button>
+
+                    <button
+                        onclick="selecionarDado(6)"
+                    >
+                        d6
+                    </button>
+
+                    <button
+                        onclick="selecionarDado(8)"
+                    >
+                        d8
+                    </button>
+
+                    <button
+                        onclick="selecionarDado(10)"
+                    >
+                        d10
+                    </button>
+
+                    <button
+                        onclick="selecionarDado(12)"
+                    >
+                        d12
+                    </button>
+
+                    <button
+                        class="selected"
+                        onclick="selecionarDado(20)"
+                    >
+                        d20
+                    </button>
+
+                    <button
+                        onclick="selecionarDado(100)"
+                    >
+                        d100
+                    </button>
+
+                </div>
+
+
+                <!-- =============================== -->
+                <!-- ÁREA DO DADO 3D -->
+                <!-- =============================== -->
+
+                <div
+                    id="dice-stage"
+                    class="dice-stage"
+                >
+                </div>
+
+
+                <!-- =============================== -->
+                <!-- CONFIGURAÇÕES -->
+                <!-- =============================== -->
+
+                <div class="special">
+
+                    <label>
+
+                        Quantidade de dados
+
+                        <input
+                            type="number"
+                            id="quantidade-dados"
+                            min="1"
+                            max="100"
+                            value="1"
+                        >
+
+                    </label>
+
+
+                    <label>
+
+                        Modificador
+
+                        <input
+                            type="number"
+                            id="modificador-dados"
+                            value="0"
+                        >
+
+                    </label>
+
+                </div>
+
+
+                <!-- =============================== -->
+                <!-- DADO SELECIONADO -->
+                <!-- =============================== -->
+
+                <div class="selected-dice">
+
+                    Dado selecionado:
+
+                    <strong id="dado-selecionado">
+                        d20
+                    </strong>
+
+                </div>
+
+
+                <!-- =============================== -->
+                <!-- BOTÕES -->
+                <!-- =============================== -->
+
+                <div class="buttons">
+
+                    <button
+                        class="primary"
+                        onclick="rolarDados()"
+                    >
+                        Rolar
+                    </button>
+
+                    <button
+                        onclick="limparRolagem()"
+                    >
+                        Limpar
+                    </button>
+
+                </div>
+
+            </main>
+
+
+            <!-- =============================== -->
+            <!-- RESULTADO -->
+            <!-- =============================== -->
+
+            <aside class="panel">
+
+                <div class="panel-title">
+                    Resultado
+                </div>
+
+
+                <div
+                    id="resultadoRolagem"
+                    class="result"
+                >
+
+                    <div class="empty">
+                        [ AGUARDANDO ROLAGEM ]
+                        <br>
+                        Escolha um dado e role.
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </section>
+
 </div>
 
+<script
+    type="module"
+    src="script.js"
+></script>
 
-<script src="script.js"></script>
 
 </body>
-
 </html>
