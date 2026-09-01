@@ -92,6 +92,12 @@
             Rolador
         </button>
 
+        <button
+            class="tab"
+            onclick="mostrarAba('anotacoes', this)">
+            Anotações
+        </button>
+
     </nav>
 
 
@@ -828,6 +834,76 @@
         </div>
 
     </section>
+
+    <section id="anotacoes" class="aba">
+
+    <div class="layout">
+
+        <main class="panel">
+
+            <div class="panel-title">
+                Nova anotação
+            </div>
+
+            <form id="form-anotacao">
+
+                <label for="titulo-anotacao">
+                    Título
+                </label>
+
+                <input
+                    type="text"
+                    id="titulo-anotacao"
+                    placeholder="Título da anotação"
+                    required
+                >
+
+                <label for="conteudo-anotacao">
+                    Conteúdo
+                </label>
+
+                <textarea
+                    id="conteudo-anotacao"
+                    placeholder="Escreva sua anotação..."
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="primary">
+                    Salvar anotação
+                </button>
+
+            </form>
+
+        </main>
+
+
+        <aside class="panel">
+
+            <div class="panel-title">
+                Anotações salvas
+            </div>
+
+            <input
+                type="text"
+                id="pesquisa-anotacao"
+                placeholder="Pesquisar anotações..."
+            >
+
+            <div id="lista-anotacoes">
+
+                <div class="muted">
+                    Carregando anotações...
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
 
 </div>
 

@@ -2300,3 +2300,368 @@ option {
     }
 
 }
+
+/* ======================================================
+   ANOTAÇÕES
+   ====================================================== */
+
+#anotacoes .layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+
+/* ======================================================
+   PAINÉIS
+   ====================================================== */
+
+#anotacoes .panel {
+    min-width: 0;
+}
+
+
+/* ======================================================
+   FORMULÁRIO
+   ====================================================== */
+
+#form-anotacao {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+#form-anotacao label {
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #bca8c9;
+}
+
+
+#form-anotacao input,
+#form-anotacao textarea,
+#pesquisa-anotacao {
+    width: 100%;
+    box-sizing: border-box;
+
+    background: #0d0912;
+    color: #f4edf7;
+
+    border: 1px solid #382044;
+
+    padding: 12px;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+#form-anotacao input {
+    height: 42px;
+}
+
+
+#form-anotacao textarea {
+    min-height: 260px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+}
+
+
+/* ======================================================
+   PLACEHOLDER
+   ====================================================== */
+
+#form-anotacao input::placeholder,
+#form-anotacao textarea::placeholder,
+#pesquisa-anotacao::placeholder {
+    color: #6f6277;
+}
+
+
+/* ======================================================
+   FOCO
+   ====================================================== */
+
+#form-anotacao input:focus,
+#form-anotacao textarea:focus,
+#pesquisa-anotacao:focus {
+
+    border-color: #ff1493;
+
+    box-shadow:
+        0 0 0 1px #ff1493,
+        0 0 12px rgba(255, 20, 147, 0.18);
+
+    background: #110b16;
+}
+
+
+/* ======================================================
+   BOTÃO SALVAR
+   ====================================================== */
+
+#form-anotacao .primary {
+    align-self: flex-start;
+
+    margin-top: 10px;
+
+    padding: 11px 20px;
+
+    border: 1px solid #ff1493;
+
+    background:
+        linear-gradient(
+            135deg,
+            #70105c,
+            #3b124b
+        );
+
+    color: #ffffff;
+
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 11px;
+
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.1s ease;
+}
+
+
+#form-anotacao .primary:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #a5147b,
+            #571765
+        );
+
+    box-shadow:
+        0 0 12px rgba(255, 20, 147, 0.3);
+}
+
+
+#form-anotacao .primary:active {
+    transform: translateY(1px);
+}
+
+
+/* ======================================================
+   PESQUISA
+   ====================================================== */
+
+#pesquisa-anotacao {
+    height: 42px;
+
+    margin-bottom: 14px;
+}
+
+
+/* ======================================================
+   LISTA
+   ====================================================== */
+
+#lista-anotacoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    max-height: 520px;
+
+    overflow-y: auto;
+
+    padding-right: 4px;
+}
+
+
+/* ======================================================
+   ITEM DA ANOTAÇÃO
+   ====================================================== */
+
+.anotacao-item {
+    position: relative;
+
+    padding: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(35, 19, 43, 0.95),
+            rgba(18, 10, 24, 0.95)
+        );
+
+    border: 1px solid #34203d;
+
+    border-left: 2px solid #ff1493;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.anotacao-item:hover {
+    border-color: #6c285f;
+
+    box-shadow:
+        0 0 12px rgba(255, 20, 147, 0.08);
+}
+
+
+/* ======================================================
+   TÍTULO DA ANOTAÇÃO
+   ====================================================== */
+
+.anotacao-titulo {
+    margin-bottom: 9px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    letter-spacing: 0.5px;
+
+    word-break: break-word;
+}
+
+
+/* ======================================================
+   CONTEÚDO
+   ====================================================== */
+
+.anotacao-conteudo {
+    color: #b9adbE;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+
+    margin-bottom: 14px;
+}
+
+
+/* ======================================================
+   BOTÕES DA ANOTAÇÃO
+   ====================================================== */
+
+.anotacao-acoes {
+    display: flex;
+    gap: 7px;
+}
+
+
+.anotacao-acoes button {
+    padding: 7px 11px;
+
+    border: 1px solid #41234d;
+
+    background: #150c1b;
+
+    color: #cbbbd1;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: bold;
+
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.anotacao-acoes button:hover {
+    color: #ffffff;
+
+    border-color: #ff1493;
+
+    background: #32112e;
+}
+
+
+/* ======================================================
+   TEXTO VAZIO
+   ====================================================== */
+
+#lista-anotacoes .muted {
+    padding: 20px;
+
+    border: 1px dashed #302039;
+
+    color: #6f6277;
+
+    text-align: center;
+
+    font-size: 11px;
+}
+
+
+/* ======================================================
+   SCROLL DA LISTA
+   ====================================================== */
+
+#lista-anotacoes::-webkit-scrollbar {
+    width: 5px;
+}
+
+
+#lista-anotacoes::-webkit-scrollbar-track {
+    background: #0a0710;
+}
+
+
+#lista-anotacoes::-webkit-scrollbar-thumb {
+    background: #4d1748;
+}
+
+
+#lista-anotacoes::-webkit-scrollbar-thumb:hover {
+    background: #ff1493;
+}
+
+
+/* ======================================================
+   RESPONSIVO
+   ====================================================== */
+
+@media (max-width: 800px) {
+
+    #anotacoes .layout {
+        grid-template-columns: 1fr;
+    }
+
+    #form-anotacao textarea {
+        min-height: 220px;
+    }
+
+}

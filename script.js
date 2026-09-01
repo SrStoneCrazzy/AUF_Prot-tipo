@@ -1280,22 +1280,11 @@ function criarGeometriaDado(lados) {
 
     switch (lados) {
 
-        // ==============================
-        // D4
-        // Tetraedro
-        // ==============================
-
         case 4:
             return new THREE.TetrahedronGeometry(
                 1.35,
                 0
             );
-
-
-        // ==============================
-        // D6
-        // Cubo
-        // ==============================
 
         case 6:
             return new THREE.BoxGeometry(
@@ -1304,23 +1293,11 @@ function criarGeometriaDado(lados) {
                 1.9
             );
 
-
-        // ==============================
-        // D8
-        // Octaedro
-        // ==============================
-
         case 8:
             return new THREE.OctahedronGeometry(
                 1.4,
                 0
             );
-
-
-        // ==============================
-        // D10
-        // Pentagonal Trapezoedro
-        // ==============================
 
         case 10:
             return new THREE.BoxGeometry(
@@ -1329,22 +1306,11 @@ function criarGeometriaDado(lados) {
                 1.9
             );
 
-        // ==============================
-        // D12
-        // Dodecaedro
-        // ==============================
-
         case 12:
             return new THREE.DodecahedronGeometry(
                 1.35,
                 0
             );
-
-
-        // ==============================
-        // D20
-        // Icosaedro
-        // ==============================
 
         case 20:
             return new THREE.IcosahedronGeometry(
@@ -2296,3 +2262,634 @@ window.addEventListener(
         carregarNPCs();
     }
 );
+
+// ======================================================
+// ANOTAÇÕES DO MESTRE
+// ======================================================
+
+let anotacaoEditando = null;
+let anotacoesCache = [];
+
+
+// ======================================================
+// CARREGAR ANOTAÇÕES
+// ======================================================
+
+async function carregarAnotacoes() {
+
+    const lista =
+        document.getElementById("lista-anotacoes");
+
+    if (!lista) {
+        return;
+    }
+
+    try {
+
+        const resposta =
+            await fetch("/api/anotacoes");
+
+        if (!resposta.ok) {
+            throw new Error(
+                "Erro ao buscar anotações"
+            );
+        }
+
+        const anotacoes =
+            await resposta.json();
+
+        anotacoesCache = anotacoes;
+
+        renderizarAnotacoes(anotacoes);
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar anotações:",
+            erro
+        );
+
+        lista.innerHTML = `
+            <div class="muted">
+                Erro ao carregar anotações.
+            </div>
+        `;
+    }
+}
+
+
+// ======================================================
+// RENDERIZAR ANOTAÇÕES
+// ======================================================
+
+function renderizarAnotacoes(anotacoes) {
+
+    const lista =
+        document.getElementById("lista-anotacoes");
+
+    if (!lista) {
+        return;
+    }
+
+    lista.innerHTML = "";
+
+    if (anotacoes.length === 0) {
+
+        lista.innerHTML = `
+            <div class="muted">
+                Nenhuma anotação salva.
+            </div>
+        `;
+
+        return;
+    }
+
+    anotacoes.forEach(anotacao => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "anotacao-item";
+
+
+        const titulo =
+            document.createElement("div");
+
+        titulo.className =
+            "anotacao-titulo";
+
+        titulo.textContent =
+            anotacao.titulo;
+
+
+        const conteudo =
+            document.createElement("div");
+
+        conteudo.className =
+            "anotacao-conteudo";
+
+        conteudo.textContent =
+            anotacao.conteudo;
+
+
+        const acoes =
+            document.createElement("div");
+
+        acoes.className =
+            "anotacao-acoes";
+
+
+        const botaoEditar =
+            document.createElement("button");
+
+        botaoEditar.textContent =
+            "Editar";
+
+        botaoEditar.addEventListener(
+            "click",
+            () => {
+                editarAnotacao(anotacao.id);
+            }
+        );
+
+
+        const botaoExcluir =
+            document.createElement("button");
+
+        botaoExcluir.textContent =
+            "Excluir";
+
+        botaoExcluir.addEventListener(
+            "click",
+            () => {
+                excluirAnotacao(anotacao.id);
+            }
+        );
+
+
+        acoes.appendChild(
+            botaoEditar
+        );
+
+        acoes.appendChild(
+            botaoExcluir
+        );
+
+
+        item.appendChild(
+            titulo
+        );
+
+        item.appendChild(
+            conteudo
+        );
+
+        item.appendChild(
+            acoes
+        );
+
+
+        lista.appendChild(
+            item
+        );
+    });
+}
+
+
+// ======================================================
+// SALVAR / EDITAR ANOTAÇÃO
+// ======================================================
+
+async function salvarAnotacao(evento) {
+
+    evento.preventDefault();
+
+
+    const campoTitulo =
+        document.getElementById(
+            "titulo-anotacao"
+        );
+
+    const campoConteudo =
+        document.getElementById(
+            "conteudo-anotacao"
+        );
+
+
+    if (!campoTitulo || !campoConteudo) {
+        return;
+    }
+
+
+    const titulo =
+        campoTitulo.value.trim();
+
+    const conteudo =
+        campoConteudo.value.trim();
+
+
+    if (!titulo || !conteudo) {
+
+        alert(
+            "Preencha o título e o conteúdo."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const editando =
+            anotacaoEditando !== null;
+
+
+        const url =
+            editando
+                ? `/api/anotacoes/${anotacaoEditando}`
+                : "/api/anotacoes";
+
+
+        const metodo =
+            editando
+                ? "PUT"
+                : "POST";
+
+
+        const resposta =
+            await fetch(
+                url,
+                {
+                    method: metodo,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        titulo: titulo,
+                        conteudo: conteudo
+                    })
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            const erro =
+                await resposta.json()
+                    .catch(() => null);
+
+            throw new Error(
+                erro?.erro ||
+                "Erro ao salvar anotação"
+            );
+        }
+
+
+        campoTitulo.value = "";
+        campoConteudo.value = "";
+
+        anotacaoEditando = null;
+
+
+        atualizarEstadoFormulario();
+
+
+        await carregarAnotacoes();
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar anotação:",
+            erro
+        );
+
+        alert(
+            "Não foi possível salvar a anotação."
+        );
+    }
+}
+
+
+// ======================================================
+// EDITAR ANOTAÇÃO
+// ======================================================
+
+function editarAnotacao(id) {
+
+    const anotacao =
+        anotacoesCache.find(
+            item => Number(item.id) === Number(id)
+        );
+
+
+    if (!anotacao) {
+        return;
+    }
+
+
+    const campoTitulo =
+        document.getElementById(
+            "titulo-anotacao"
+        );
+
+    const campoConteudo =
+        document.getElementById(
+            "conteudo-anotacao"
+        );
+
+
+    if (!campoTitulo || !campoConteudo) {
+        return;
+    }
+
+
+    campoTitulo.value =
+        anotacao.titulo;
+
+    campoConteudo.value =
+        anotacao.conteudo;
+
+
+    anotacaoEditando =
+        Number(anotacao.id);
+
+
+    atualizarEstadoFormulario();
+
+
+    campoTitulo.focus();
+}
+
+
+// ======================================================
+// EXCLUIR ANOTAÇÃO
+// ======================================================
+
+async function excluirAnotacao(id) {
+
+    const confirmar =
+        confirm(
+            "Deseja realmente excluir esta anotação?"
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `/api/anotacoes/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            const erro =
+                await resposta.json()
+                    .catch(() => null);
+
+            throw new Error(
+                erro?.erro ||
+                "Erro ao excluir anotação"
+            );
+        }
+
+
+        if (
+            anotacaoEditando !== null &&
+            Number(anotacaoEditando) === Number(id)
+        ) {
+
+            cancelarEdicao();
+        }
+
+
+        await carregarAnotacoes();
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao excluir anotação:",
+            erro
+        );
+
+        alert(
+            "Não foi possível excluir a anotação."
+        );
+    }
+}
+
+
+// ======================================================
+// CANCELAR EDIÇÃO
+// ======================================================
+
+function cancelarEdicao() {
+
+    const formulario =
+        document.getElementById(
+            "form-anotacao"
+        );
+
+    if (formulario) {
+        formulario.reset();
+    }
+
+
+    anotacaoEditando = null;
+
+    atualizarEstadoFormulario();
+}
+
+
+// ======================================================
+// ATUALIZAR BOTÃO DO FORMULÁRIO
+// ======================================================
+
+function atualizarEstadoFormulario() {
+
+    const botao =
+        document.querySelector(
+            "#form-anotacao button[type='submit']"
+        );
+
+
+    if (!botao) {
+        return;
+    }
+
+
+    if (anotacaoEditando !== null) {
+
+        botao.textContent =
+            "Salvar alterações";
+
+
+        let botaoCancelar =
+            document.getElementById(
+                "cancelar-edicao-anotacao"
+            );
+
+
+        if (!botaoCancelar) {
+
+            botaoCancelar =
+                document.createElement(
+                    "button"
+                );
+
+            botaoCancelar.type =
+                "button";
+
+            botaoCancelar.id =
+                "cancelar-edicao-anotacao";
+
+            botaoCancelar.textContent =
+                "Cancelar edição";
+
+
+            botaoCancelar.addEventListener(
+                "click",
+                cancelarEdicao
+            );
+
+
+            botao.parentElement.appendChild(
+                botaoCancelar
+            );
+        }
+
+
+    } else {
+
+        botao.textContent =
+            "Salvar anotação";
+
+
+        const botaoCancelar =
+            document.getElementById(
+                "cancelar-edicao-anotacao"
+            );
+
+
+        if (botaoCancelar) {
+
+            botaoCancelar.remove();
+        }
+    }
+}
+
+
+// ======================================================
+// PESQUISA DE ANOTAÇÕES
+// ======================================================
+
+function pesquisarAnotacoes() {
+
+    const campo =
+        document.getElementById(
+            "pesquisa-anotacao"
+        );
+
+
+    if (!campo) {
+        return;
+    }
+
+
+    const pesquisa =
+        campo.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!pesquisa) {
+
+        renderizarAnotacoes(
+            anotacoesCache
+        );
+
+        return;
+    }
+
+
+    const resultados =
+        anotacoesCache.filter(
+            anotacao => {
+
+                const titulo =
+                    String(
+                        anotacao.titulo || ""
+                    ).toLowerCase();
+
+
+                const conteudo =
+                    String(
+                        anotacao.conteudo || ""
+                    ).toLowerCase();
+
+
+                return (
+                    titulo.includes(pesquisa) ||
+                    conteudo.includes(pesquisa)
+                );
+            }
+        );
+
+
+    renderizarAnotacoes(
+        resultados
+    );
+}
+
+
+// ======================================================
+// INICIALIZAÇÃO DAS ANOTAÇÕES
+// ======================================================
+
+function inicializarAnotacoes() {
+
+    const formulario =
+        document.getElementById(
+            "form-anotacao"
+        );
+
+
+    if (formulario) {
+
+        formulario.addEventListener(
+            "submit",
+            salvarAnotacao
+        );
+    }
+
+
+    const pesquisa =
+        document.getElementById(
+            "pesquisa-anotacao"
+        );
+
+
+    if (pesquisa) {
+
+        pesquisa.addEventListener(
+            "input",
+            pesquisarAnotacoes
+        );
+    }
+
+
+    carregarAnotacoes();
+}
+
+
+// ======================================================
+// INICIAR
+// ======================================================
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        inicializarAnotacoes
+    );
+
+} else {
+
+    inicializarAnotacoes();
+}
