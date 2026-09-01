@@ -104,7 +104,138 @@
             Criaturas
         </button>
 
+        <button
+            class="tab"
+            onclick="mostrarAba('itens', this)">
+            Itens
+        </button>
+
     </nav>
+
+    <section id="itens" class="aba">
+
+    <div class="layout">
+
+        <!-- ==========================================
+             NOVO ITEM
+             ========================================== -->
+
+        <main class="panel">
+
+            <div class="panel-title">
+                Novo item
+            </div>
+
+            <form id="form-item">
+
+                <label for="nome-item">
+                    Nome
+                </label>
+
+                <input
+                    type="text"
+                    id="nome-item"
+                    placeholder="Nome do item"
+                    required
+                >
+
+
+                <label for="tipo-item">
+                    Tipo
+                </label>
+
+                <select
+                    id="tipo-item"
+                    required
+                >
+
+                    <option value="normal">
+                        Objeto normal
+                    </option>
+
+                    <option value="amaldiçoado">
+                        Objeto amaldiçoado
+                    </option>
+
+                </select>
+
+
+                <label for="categoria-item">
+                    Categoria
+                </label>
+
+                <input
+                    type="text"
+                    id="categoria-item"
+                    placeholder="Ex.: Arma, ferramenta, consumível..."
+                    required
+                >
+
+
+                <label for="descricao-item">
+                    Descrição
+                </label>
+
+                <textarea
+                    id="descricao-item"
+                    placeholder="Descrição do objeto..."
+                    required
+                ></textarea>
+
+
+                <label for="efeito-item">
+                    Efeito
+                </label>
+
+                <textarea
+                    id="efeito-item"
+                    placeholder="Efeito especial, se houver..."
+                ></textarea>
+
+
+                <button
+                    type="submit"
+                    class="primary"
+                >
+                    Salvar item
+                </button>
+
+            </form>
+
+        </main>
+
+
+        <!-- ==========================================
+             ITENS SALVOS
+             ========================================== -->
+
+        <aside class="panel">
+
+            <div class="panel-title">
+                Itens salvos
+            </div>
+
+
+            <input
+                type="text"
+                id="pesquisa-item"
+                placeholder="Pesquisar itens..."
+            >
+
+
+            <div id="lista-itens">
+
+                <div class="muted">
+                    Carregando itens...
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
 
     <section id="criaturas" class="aba">
 

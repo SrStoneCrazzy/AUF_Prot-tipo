@@ -1086,6 +1086,352 @@ if (
     return;
 }
 
+// ==========================================
+// ITENS - BUSCAR
+// ==========================================
+
+if (
+    req.method === "GET" &&
+    req.url === "/api/itens"
+) {
+
+    db.query(
+        "SELECT * FROM itens",
+        (erro, resultados) => {
+
+            if (erro) {
+
+                console.error(
+                    "Erro ao buscar itens:",
+                    erro
+                );
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao buscar itens"
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(
+                JSON.stringify(resultados)
+            );
+        }
+    );
+
+    return;
+}
+
+
+// ==========================================
+// ITENS - CRIAR
+// ==========================================
+
+if (
+    req.method === "POST" &&
+    req.url === "/api/itens"
+) {
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const sql = `
+                INSERT INTO itens
+                (
+                    nome,
+                    tipo,
+                    categoria,
+                    descricao,
+                    efeito
+                )
+                VALUES (?, ?, ?, ?, ?)
+            `;
+
+            db.query(
+                sql,
+                [
+                    dados.nome,
+                    dados.tipo,
+                    dados.categoria,
+                    dados.descricao,
+                    dados.efeito
+                ],
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(
+                            "Erro ao criar item:",
+                            erro
+                        );
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao criar item"
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(201, {
+                        "Content-Type":
+                            "application/json"
+                    });
+
+                    res.end(JSON.stringify({
+                        id:
+                            resultado.insertId,
+
+                        nome:
+                            dados.nome,
+
+                        tipo:
+                            dados.tipo,
+
+                        categoria:
+                            dados.categoria,
+
+                        descricao:
+                            dados.descricao,
+
+                        efeito:
+                            dados.efeito
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos"
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// ==========================================
+// ITENS - EDITAR
+// ==========================================
+
+if (
+    req.method === "PUT" &&
+    req.url.startsWith("/api/itens/")
+) {
+
+    const id =
+        req.url.split("/")[3];
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const sql = `
+                UPDATE itens
+                SET
+                    nome = ?,
+                    tipo = ?,
+                    categoria = ?,
+                    descricao = ?,
+                    efeito = ?
+                WHERE id = ?
+            `;
+
+            db.query(
+                sql,
+                [
+                    dados.nome,
+                    dados.tipo,
+                    dados.categoria,
+                    dados.descricao,
+                    dados.efeito,
+                    id
+                ],
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(
+                            "Erro ao editar item:",
+                            erro
+                        );
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao editar item"
+                        }));
+
+                        return;
+                    }
+
+                    if (
+                        resultado.affectedRows === 0
+                    ) {
+
+                        res.writeHead(404, {
+                            "Content-Type":
+                                "application/json"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Item não encontrado"
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(200, {
+                        "Content-Type":
+                            "application/json"
+                    });
+
+                    res.end(JSON.stringify({
+                        mensagem:
+                            "Item editado com sucesso"
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos"
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// ==========================================
+// ITENS - EXCLUIR
+// ==========================================
+
+if (
+    req.method === "DELETE" &&
+    req.url.startsWith("/api/itens/")
+) {
+
+    const id =
+        req.url.split("/")[3];
+
+    db.query(
+        "DELETE FROM itens WHERE id = ?",
+        [id],
+        (erro, resultado) => {
+
+            if (erro) {
+
+                console.error(
+                    "Erro ao excluir item:",
+                    erro
+                );
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao excluir item"
+                }));
+
+                return;
+            }
+
+            if (
+                resultado.affectedRows === 0
+            ) {
+
+                res.writeHead(404, {
+                    "Content-Type":
+                        "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Item não encontrado"
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json"
+            });
+
+            res.end(JSON.stringify({
+                mensagem:
+                    "Item excluído com sucesso"
+            }));
+        }
+    );
+
+    return;
+}
+
 
     // ==========================================
     // ROTA NÃO ENCONTRADA

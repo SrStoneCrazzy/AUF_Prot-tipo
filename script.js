@@ -3775,3 +3775,821 @@ if (
 
     inicializarCriaturas();
 }
+
+// ======================================================
+// ITENS
+// ======================================================
+
+let itemEditando = null;
+
+let itensCache = [];
+
+
+// ======================================================
+// CARREGAR ITENS
+// ======================================================
+
+async function carregarItens() {
+
+    const lista =
+        document.getElementById(
+            "lista-itens"
+        );
+
+    if (!lista) {
+        return;
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+                "/api/itens"
+            );
+
+        if (!resposta.ok) {
+            throw new Error(
+                "Erro ao buscar itens"
+            );
+        }
+
+        const itens =
+            await resposta.json();
+
+        itensCache =
+            itens;
+
+        renderizarItens(
+            itens
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar itens:",
+            erro
+        );
+
+        lista.innerHTML = `
+            <div class="muted">
+                Erro ao carregar itens.
+            </div>
+        `;
+    }
+}
+
+
+// ======================================================
+// RENDERIZAR ITENS
+// ======================================================
+
+function renderizarItens(itens) {
+
+    const lista =
+        document.getElementById(
+            "lista-itens"
+        );
+
+    if (!lista) {
+        return;
+    }
+
+    lista.innerHTML = "";
+
+
+    if (itens.length === 0) {
+
+        lista.innerHTML = `
+            <div class="muted">
+                Nenhum item cadastrado.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    itens.forEach(item => {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+        card.className =
+            "item-card";
+
+
+        // ------------------------------------------
+        // CABEÇALHO
+        // ------------------------------------------
+
+        const cabecalho =
+            document.createElement(
+                "div"
+            );
+
+        cabecalho.className =
+            "item-cabecalho";
+
+
+        const nome =
+            document.createElement(
+                "div"
+            );
+
+        nome.className =
+            "item-nome";
+
+        nome.textContent =
+            item.nome;
+
+
+        const tipo =
+            document.createElement(
+                "div"
+            );
+
+        tipo.className =
+            "item-tipo";
+
+
+        if (
+            String(item.tipo)
+                .toLowerCase()
+                .includes("amaldi")
+        ) {
+
+            tipo.classList.add(
+                "amaldicoado"
+            );
+
+            tipo.textContent =
+                "Objeto amaldiçoado";
+
+        } else {
+
+            tipo.textContent =
+                "Objeto normal";
+        }
+
+
+        cabecalho.appendChild(
+            nome
+        );
+
+        cabecalho.appendChild(
+            tipo
+        );
+
+
+        // ------------------------------------------
+        // CATEGORIA
+        // ------------------------------------------
+
+        const categoria =
+            document.createElement(
+                "div"
+            );
+
+        categoria.className =
+            "item-categoria";
+
+        categoria.textContent =
+            item.categoria;
+
+
+        // ------------------------------------------
+        // DESCRIÇÃO
+        // ------------------------------------------
+
+        const descricao =
+            document.createElement(
+                "div"
+            );
+
+        descricao.className =
+            "item-descricao";
+
+        descricao.textContent =
+            item.descricao;
+
+
+        // ------------------------------------------
+        // EFEITO
+        // ------------------------------------------
+
+        if (item.efeito) {
+
+            const efeito =
+                document.createElement(
+                    "div"
+                );
+
+            efeito.className =
+                "item-efeito";
+
+
+            const tituloEfeito =
+                document.createElement(
+                    "span"
+                );
+
+            tituloEfeito.className =
+                "item-efeito-titulo";
+
+            tituloEfeito.textContent =
+                "Efeito";
+
+
+            const textoEfeito =
+                document.createElement(
+                    "span"
+                );
+
+            textoEfeito.textContent =
+                item.efeito;
+
+
+            efeito.appendChild(
+                tituloEfeito
+            );
+
+            efeito.appendChild(
+                textoEfeito
+            );
+
+
+            card.appendChild(
+                efeito
+            );
+        }
+
+
+        // ------------------------------------------
+        // AÇÕES
+        // ------------------------------------------
+
+        const acoes =
+            document.createElement(
+                "div"
+            );
+
+        acoes.className =
+            "item-acoes";
+
+
+        const botaoEditar =
+            document.createElement(
+                "button"
+            );
+
+        botaoEditar.textContent =
+            "Editar";
+
+
+        botaoEditar.addEventListener(
+            "click",
+            () => {
+
+                editarItem(
+                    item.id
+                );
+            }
+        );
+
+
+        const botaoExcluir =
+            document.createElement(
+                "button"
+            );
+
+        botaoExcluir.textContent =
+            "Excluir";
+
+
+        botaoExcluir.addEventListener(
+            "click",
+            () => {
+
+                excluirItem(
+                    item.id
+                );
+            }
+        );
+
+
+        acoes.appendChild(
+            botaoEditar
+        );
+
+        acoes.appendChild(
+            botaoExcluir
+        );
+
+
+        // ------------------------------------------
+        // MONTAR CARD
+        // ------------------------------------------
+
+        card.appendChild(
+            cabecalho
+        );
+
+        card.appendChild(
+            categoria
+        );
+
+        card.appendChild(
+            descricao
+        );
+
+        card.appendChild(
+            acoes
+        );
+
+
+        lista.appendChild(
+            card
+        );
+    });
+}
+
+
+// ======================================================
+// SALVAR / EDITAR ITEM
+// ======================================================
+
+async function salvarItem(evento) {
+
+    evento.preventDefault();
+
+
+    const nome =
+        document.getElementById(
+            "nome-item"
+        ).value.trim();
+
+
+    const tipo =
+        document.getElementById(
+            "tipo-item"
+        ).value;
+
+
+    const categoria =
+        document.getElementById(
+            "categoria-item"
+        ).value.trim();
+
+
+    const descricao =
+        document.getElementById(
+            "descricao-item"
+        ).value.trim();
+
+
+    const efeito =
+        document.getElementById(
+            "efeito-item"
+        ).value.trim();
+
+
+    if (
+        !nome ||
+        !tipo ||
+        !categoria ||
+        !descricao
+    ) {
+
+        alert(
+            "Preencha todos os campos obrigatórios."
+        );
+
+        return;
+    }
+
+
+    const editando =
+        itemEditando !== null;
+
+
+    const url =
+        editando
+            ? `/api/itens/${itemEditando}`
+            : "/api/itens";
+
+
+    const metodo =
+        editando
+            ? "PUT"
+            : "POST";
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                url,
+                {
+                    method: metodo,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        nome:
+                            nome,
+
+                        tipo:
+                            tipo,
+
+                        categoria:
+                            categoria,
+
+                        descricao:
+                            descricao,
+
+                        efeito:
+                            efeito || null
+                    })
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            const erro =
+                await resposta.json()
+                    .catch(
+                        () => null
+                    );
+
+            throw new Error(
+                erro?.erro ||
+                "Erro ao salvar item"
+            );
+        }
+
+
+        limparFormularioItem();
+
+        await carregarItens();
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar item:",
+            erro
+        );
+
+        alert(
+            "Não foi possível salvar o item."
+        );
+    }
+}
+
+
+// ======================================================
+// EDITAR ITEM
+// ======================================================
+
+function editarItem(id) {
+
+    const item =
+        itensCache.find(
+            elemento =>
+                Number(elemento.id) ===
+                Number(id)
+        );
+
+
+    if (!item) {
+        return;
+    }
+
+
+    document.getElementById(
+        "nome-item"
+    ).value =
+        item.nome;
+
+
+    document.getElementById(
+        "tipo-item"
+    ).value =
+        item.tipo;
+
+
+    document.getElementById(
+        "categoria-item"
+    ).value =
+        item.categoria;
+
+
+    document.getElementById(
+        "descricao-item"
+    ).value =
+        item.descricao;
+
+
+    document.getElementById(
+        "efeito-item"
+    ).value =
+        item.efeito || "";
+
+
+    itemEditando =
+        Number(item.id);
+
+
+    const formulario =
+        document.getElementById(
+            "form-item"
+        );
+
+
+    if (formulario) {
+
+        formulario.classList.add(
+            "editando"
+        );
+    }
+
+
+    const botao =
+        formulario?.querySelector(
+            "button[type='submit']"
+        );
+
+
+    if (botao) {
+
+        botao.textContent =
+            "Salvar alterações";
+    }
+
+
+    document.getElementById(
+        "nome-item"
+    ).focus();
+}
+
+
+// ======================================================
+// LIMPAR FORMULÁRIO
+// ======================================================
+
+function limparFormularioItem() {
+
+    const formulario =
+        document.getElementById(
+            "form-item"
+        );
+
+
+    if (formulario) {
+
+        formulario.reset();
+
+        formulario.classList.remove(
+            "editando"
+        );
+    }
+
+
+    itemEditando =
+        null;
+
+
+    const botao =
+        formulario?.querySelector(
+            "button[type='submit']"
+        );
+
+
+    if (botao) {
+
+        botao.textContent =
+            "Salvar item";
+    }
+}
+
+
+// ======================================================
+// EXCLUIR ITEM
+// ======================================================
+
+async function excluirItem(id) {
+
+    const confirmar =
+        confirm(
+            "Deseja realmente excluir este item?"
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `/api/itens/${id}`,
+                {
+                    method:
+                        "DELETE"
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            const erro =
+                await resposta.json()
+                    .catch(
+                        () => null
+                    );
+
+            throw new Error(
+                erro?.erro ||
+                "Erro ao excluir item"
+            );
+        }
+
+
+        if (
+            itemEditando !== null &&
+            Number(itemEditando) ===
+                Number(id)
+        ) {
+
+            limparFormularioItem();
+        }
+
+
+        await carregarItens();
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao excluir item:",
+            erro
+        );
+
+        alert(
+            "Não foi possível excluir o item."
+        );
+    }
+}
+
+
+// ======================================================
+// PESQUISAR ITENS
+// ======================================================
+
+function pesquisarItens() {
+
+    const campo =
+        document.getElementById(
+            "pesquisa-item"
+        );
+
+
+    if (!campo) {
+        return;
+    }
+
+
+    const pesquisa =
+        campo.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!pesquisa) {
+
+        renderizarItens(
+            itensCache
+        );
+
+        return;
+    }
+
+
+    const resultados =
+        itensCache.filter(
+            item => {
+
+                const nome =
+                    String(
+                        item.nome || ""
+                    ).toLowerCase();
+
+
+                const tipo =
+                    String(
+                        item.tipo || ""
+                    ).toLowerCase();
+
+
+                const categoria =
+                    String(
+                        item.categoria || ""
+                    ).toLowerCase();
+
+
+                const descricao =
+                    String(
+                        item.descricao || ""
+                    ).toLowerCase();
+
+
+                const efeito =
+                    String(
+                        item.efeito || ""
+                    ).toLowerCase();
+
+
+                return (
+                    nome.includes(pesquisa) ||
+                    tipo.includes(pesquisa) ||
+                    categoria.includes(pesquisa) ||
+                    descricao.includes(pesquisa) ||
+                    efeito.includes(pesquisa)
+                );
+            }
+        );
+
+
+    renderizarItens(
+        resultados
+    );
+}
+
+
+// ======================================================
+// INICIALIZAR ITENS
+// ======================================================
+
+function inicializarItens() {
+
+    const formulario =
+        document.getElementById(
+            "form-item"
+        );
+
+
+    if (formulario) {
+
+        formulario.addEventListener(
+            "submit",
+            salvarItem
+        );
+    }
+
+
+    const pesquisa =
+        document.getElementById(
+            "pesquisa-item"
+        );
+
+
+    if (pesquisa) {
+
+        pesquisa.addEventListener(
+            "input",
+            pesquisarItens
+        );
+    }
+
+
+    carregarItens();
+}
+
+
+// ======================================================
+// INICIAR
+// ======================================================
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        inicializarItens
+    );
+
+} else {
+
+    inicializarItens();
+}
