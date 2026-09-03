@@ -1431,11 +1431,1018 @@ if (
 
     return;
 }
+// ===============================
+// API - ORDEM DE TURNOS
+// ===============================
+
+// Listar ordem de turnos
+if (req.method === "GET" && req.url === "/api/ordem-turnos") {
+    db.query(
+        "SELECT * FROM ordem_turnos ORDER BY teste DESC",
+        (erro, resultados) => {
+            if (erro) {
+                res.writeHead(500, {
+                    "Content-Type": "application/json; charset=utf-8"
+                });
+                res.end(JSON.stringify({
+                    erro: "Erro ao buscar ordem de turnos."
+                }));
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type": "application/json; charset=utf-8"
+            });
+            res.end(JSON.stringify(resultados));
+        }
+    );
+
+    return;
+}
 
 
-    // ==========================================
-    // ROTA NÃO ENCONTRADA
-    // ==========================================
+// Adicionar participante
+if (req.method === "POST" && req.url === "/api/ordem-turnos") {
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+        try {
+            const dados = JSON.parse(corpo);
+
+            const nome = dados.nome;
+            const teste = Number(dados.teste);
+
+            if (!nome || Number.isNaN(teste)) {
+                res.writeHead(400, {
+                    "Content-Type": "application/json; charset=utf-8"
+                });
+                res.end(JSON.stringify({
+                    erro: "Nome e teste são obrigatórios."
+                }));
+                return;
+            }
+
+            db.query(
+                "INSERT INTO ordem_turnos (nome, teste) VALUES (?, ?)",
+                [nome, teste],
+                (erro, resultado) => {
+                    if (erro) {
+                        res.writeHead(500, {
+                            "Content-Type": "application/json; charset=utf-8"
+                        });
+                        res.end(JSON.stringify({
+                            erro: "Erro ao adicionar participante."
+                        }));
+                        return;
+                    }
+
+                    res.writeHead(201, {
+                        "Content-Type": "application/json; charset=utf-8"
+                    });
+                    res.end(JSON.stringify({
+                        id: resultado.insertId,
+                        nome,
+                        teste
+                    }));
+                }
+            );
+
+        } catch (erro) {
+            res.writeHead(400, {
+                "Content-Type": "application/json; charset=utf-8"
+            });
+            res.end(JSON.stringify({
+                erro: "Dados inválidos."
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// Editar participante
+if (req.method === "PUT" && req.url.startsWith("/api/ordem-turnos/")) {
+    const id = req.url.split("/").pop();
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+        try {
+            const dados = JSON.parse(corpo);
+
+            const nome = dados.nome;
+            const teste = Number(dados.teste);
+
+            if (!nome || Number.isNaN(teste)) {
+                res.writeHead(400, {
+                    "Content-Type": "application/json; charset=utf-8"
+                });
+                res.end(JSON.stringify({
+                    erro: "Nome e teste são obrigatórios."
+                }));
+                return;
+            }
+
+            db.query(
+                "UPDATE ordem_turnos SET nome = ?, teste = ? WHERE id = ?",
+                [nome, teste, id],
+                erro => {
+                    if (erro) {
+                        res.writeHead(500, {
+                            "Content-Type": "application/json; charset=utf-8"
+                        });
+                        res.end(JSON.stringify({
+                            erro: "Erro ao editar participante."
+                        }));
+                        return;
+                    }
+
+                    res.writeHead(200, {
+                        "Content-Type": "application/json; charset=utf-8"
+                    });
+                    res.end(JSON.stringify({
+                        mensagem: "Participante atualizado."
+                    }));
+                }
+            );
+
+        } catch (erro) {
+            res.writeHead(400, {
+                "Content-Type": "application/json; charset=utf-8"
+            });
+            res.end(JSON.stringify({
+                erro: "Dados inválidos."
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// Excluir participante
+if (req.method === "DELETE" && req.url.startsWith("/api/ordem-turnos/")) {
+    const id = req.url.split("/").pop();
+
+    db.query(
+        "DELETE FROM ordem_turnos WHERE id = ?",
+        [id],
+        erro => {
+            if (erro) {
+                res.writeHead(500, {
+                    "Content-Type": "application/json; charset=utf-8"
+                });
+                res.end(JSON.stringify({
+                    erro: "Erro ao excluir participante."
+                }));
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type": "application/json; charset=utf-8"
+            });
+            res.end(JSON.stringify({
+                mensagem: "Participante excluído."
+            }));
+        }
+    );
+
+    return;
+}
+
+
+
+if (req.method === "DELETE" && req.url === "/api/ordem-turnos") {
+    db.query(
+        "DELETE FROM ordem_turnos",
+        erro => {
+            if (erro) {
+                res.writeHead(500, {
+                    "Content-Type": "application/json; charset=utf-8"
+                });
+                res.end(JSON.stringify({
+                    erro: "Erro ao limpar ordem de turnos."
+                }));
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type": "application/json; charset=utf-8"
+            });
+            res.end(JSON.stringify({
+                mensagem: "Ordem de turnos limpa."
+            }));
+        }
+    );
+
+    return;
+}
+
+// Servir wallpaper
+if (req.method === "GET" && req.url === "/wallpaperauf.jpg") {
+    fs.readFile("./wallpaperauf.jpg", (erro, arquivo) => {
+        if (erro) {
+            res.writeHead(404, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+            res.end("Wallpaper não encontrado.");
+            return;
+        }
+
+        res.writeHead(200, {
+            "Content-Type": "image/jpeg"
+        });
+
+        res.end(arquivo);
+    });
+
+    return;
+}
+
+// ===============================
+// API - COMBATE DE CRIATURAS
+// ===============================
+
+// Listar criaturas em combate
+if (
+    req.method === "GET" &&
+    req.url === "/api/combate-criaturas"
+) {
+
+    db.query(
+        "SELECT * FROM combate_criaturas ORDER BY id ASC",
+        (erro, resultados) => {
+
+            if (erro) {
+
+                console.error(
+                    "Erro ao buscar criaturas em combate:",
+                    erro
+                );
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao buscar criaturas em combate."
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(
+                JSON.stringify(resultados)
+            );
+        }
+    );
+
+    return;
+}
+
+
+// Criar criatura em combate
+if (
+    req.method === "POST" &&
+    req.url === "/api/combate-criaturas"
+) {
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const criaturaId =
+                Number(dados.criatura_id);
+
+            const nome =
+                String(
+                    dados.nome || ""
+                ).trim();
+
+            const vidaMaxima =
+                Number(dados.vida_maxima);
+
+            if (
+                Number.isNaN(criaturaId) ||
+                !nome ||
+                Number.isNaN(vidaMaxima)
+            ) {
+
+                res.writeHead(400, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "criatura_id, nome e vida_maxima são obrigatórios."
+                }));
+
+                return;
+            }
+
+            db.query(
+                `
+                INSERT INTO combate_criaturas
+                (
+                    criatura_id,
+                    nome,
+                    vida_atual,
+                    vida_maxima
+                )
+                VALUES (?, ?, ?, ?)
+                `,
+                [
+                    criaturaId,
+                    nome,
+                    vidaMaxima,
+                    vidaMaxima
+                ],
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(
+                            "Erro ao criar criatura em combate:",
+                            erro
+                        );
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json; charset=utf-8"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao criar criatura em combate."
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(201, {
+                        "Content-Type":
+                            "application/json; charset=utf-8"
+                    });
+
+                    res.end(JSON.stringify({
+                        id:
+                            resultado.insertId,
+
+                        criatura_id:
+                            criaturaId,
+
+                        nome:
+                            nome,
+
+                        vida_atual:
+                            vidaMaxima,
+
+                        vida_maxima:
+                            vidaMaxima
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos."
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// Editar criatura em combate
+if (
+    req.method === "PUT" &&
+    req.url.startsWith("/api/combate-criaturas/")
+) {
+
+    const id =
+        req.url.split("/").pop();
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const vidaAtual =
+                Number(dados.vida_atual);
+
+            const nome =
+                dados.nome !== undefined
+                    ? String(dados.nome).trim()
+                    : null;
+
+            if (Number.isNaN(vidaAtual)) {
+
+                res.writeHead(400, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "vida_atual inválida."
+                }));
+
+                return;
+            }
+
+            const sql =
+                nome !== null
+                    ? `
+                        UPDATE combate_criaturas
+                        SET nome = ?, vida_atual = ?
+                        WHERE id = ?
+                    `
+                    : `
+                        UPDATE combate_criaturas
+                        SET vida_atual = ?
+                        WHERE id = ?
+                    `;
+
+            const valores =
+                nome !== null
+                    ? [nome, vidaAtual, id]
+                    : [vidaAtual, id];
+
+            db.query(
+                sql,
+                valores,
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(
+                            "Erro ao atualizar criatura em combate:",
+                            erro
+                        );
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json; charset=utf-8"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao atualizar criatura em combate."
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(200, {
+                        "Content-Type":
+                            "application/json; charset=utf-8"
+                    });
+
+                    res.end(JSON.stringify({
+                        mensagem:
+                            "Criatura em combate atualizada."
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos."
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// Excluir criatura em combate
+if (
+    req.method === "DELETE" &&
+    req.url.startsWith("/api/combate-criaturas/")
+) {
+
+    const id =
+        req.url.split("/").pop();
+
+    db.query(
+        "DELETE FROM combate_criaturas WHERE id = ?",
+        [id],
+        (erro, resultado) => {
+
+            if (erro) {
+
+                console.error(
+                    "Erro ao excluir criatura em combate:",
+                    erro
+                );
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao excluir criatura em combate."
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                mensagem:
+                    "Criatura em combate excluída."
+            }));
+        }
+    );
+
+    return;
+}
+
+
+// Limpar criaturas em combate
+if (
+    req.method === "DELETE" &&
+    req.url === "/api/combate-criaturas"
+) {
+
+    db.query(
+        "DELETE FROM combate_criaturas",
+        erro => {
+
+            if (erro) {
+
+                console.error(
+                    "Erro ao limpar criaturas em combate:",
+                    erro
+                );
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao limpar criaturas em combate."
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                mensagem:
+                    "Criaturas em combate limpas."
+            }));
+        }
+    );
+
+    return;
+}
+
+
+// ===============================
+// API - ORDEM DE TURNOS
+// ===============================
+
+// Listar ordem
+if (
+    req.method === "GET" &&
+    req.url === "/api/ordem-turnos"
+) {
+
+    db.query(
+        "SELECT * FROM ordem_turnos ORDER BY teste DESC",
+        (erro, resultados) => {
+
+            if (erro) {
+
+                console.error(erro);
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao buscar ordem de turnos."
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(
+                JSON.stringify(resultados)
+            );
+        }
+    );
+
+    return;
+}
+
+
+// Adicionar participante ou criatura
+if (
+    req.method === "POST" &&
+    req.url === "/api/ordem-turnos"
+) {
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const nome =
+                String(
+                    dados.nome || ""
+                ).trim();
+
+            const teste =
+                Number(dados.teste);
+
+            const tipo =
+                dados.tipo ||
+                "participante";
+
+            const combateCriaturaId =
+                dados.combate_criatura_id
+                    ? Number(
+                        dados.combate_criatura_id
+                    )
+                    : null;
+
+            if (
+                !nome ||
+                Number.isNaN(teste)
+            ) {
+
+                res.writeHead(400, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Nome e teste são obrigatórios."
+                }));
+
+                return;
+            }
+
+            db.query(
+                `
+                INSERT INTO ordem_turnos
+                (
+                    nome,
+                    teste,
+                    tipo,
+                    combate_criatura_id
+                )
+                VALUES (?, ?, ?, ?)
+                `,
+                [
+                    nome,
+                    teste,
+                    tipo,
+                    combateCriaturaId
+                ],
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(erro);
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json; charset=utf-8"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao adicionar à ordem de turnos."
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(201, {
+                        "Content-Type":
+                            "application/json; charset=utf-8"
+                    });
+
+                    res.end(JSON.stringify({
+                        id:
+                            resultado.insertId,
+
+                        nome:
+                            nome,
+
+                        teste:
+                            teste,
+
+                        tipo:
+                            tipo,
+
+                        combate_criatura_id:
+                            combateCriaturaId
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos."
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// Editar participante
+if (
+    req.method === "PUT" &&
+    req.url.startsWith("/api/ordem-turnos/")
+) {
+
+    const id =
+        req.url.split("/").pop();
+
+    let corpo = "";
+
+    req.on("data", parte => {
+        corpo += parte;
+    });
+
+    req.on("end", () => {
+
+        try {
+
+            const dados =
+                JSON.parse(corpo);
+
+            const nome =
+                String(
+                    dados.nome || ""
+                ).trim();
+
+            const teste =
+                Number(dados.teste);
+
+            if (
+                !nome ||
+                Number.isNaN(teste)
+            ) {
+
+                res.writeHead(400, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Nome e teste são obrigatórios."
+                }));
+
+                return;
+            }
+
+            db.query(
+                `
+                UPDATE ordem_turnos
+                SET nome = ?, teste = ?
+                WHERE id = ?
+                `,
+                [
+                    nome,
+                    teste,
+                    id
+                ],
+                (erro, resultado) => {
+
+                    if (erro) {
+
+                        console.error(erro);
+
+                        res.writeHead(500, {
+                            "Content-Type":
+                                "application/json; charset=utf-8"
+                        });
+
+                        res.end(JSON.stringify({
+                            erro:
+                                "Erro ao editar participante."
+                        }));
+
+                        return;
+                    }
+
+                    res.writeHead(200, {
+                        "Content-Type":
+                            "application/json; charset=utf-8"
+                    });
+
+                    res.end(JSON.stringify({
+                        mensagem:
+                            "Participante atualizado."
+                    }));
+                }
+            );
+
+        } catch (erro) {
+
+            res.writeHead(400, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                erro:
+                    "Dados inválidos."
+            }));
+        }
+    });
+
+    return;
+}
+
+
+// Excluir participante
+if (
+    req.method === "DELETE" &&
+    req.url.startsWith("/api/ordem-turnos/")
+) {
+
+    const id =
+        req.url.split("/").pop();
+
+    db.query(
+        "DELETE FROM ordem_turnos WHERE id = ?",
+        [id],
+        (erro, resultado) => {
+
+            if (erro) {
+
+                console.error(erro);
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao excluir participante."
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                mensagem:
+                    "Participante excluído."
+            }));
+        }
+    );
+
+    return;
+}
+
+
+// Limpar ordem
+if (
+    req.method === "DELETE" &&
+    req.url === "/api/ordem-turnos"
+) {
+
+    db.query(
+        "DELETE FROM ordem_turnos",
+        erro => {
+
+            if (erro) {
+
+                console.error(erro);
+
+                res.writeHead(500, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(JSON.stringify({
+                    erro:
+                        "Erro ao limpar ordem de turnos."
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type":
+                    "application/json; charset=utf-8"
+            });
+
+            res.end(JSON.stringify({
+                mensagem:
+                    "Ordem de turnos limpa."
+            }));
+        }
+    );
+
+    return;
+}
 
     res.writeHead(404, {
         "Content-Type":

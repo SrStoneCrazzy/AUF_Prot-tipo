@@ -1,5 +1,9 @@
 import * as THREE from "three";
 
+// ======================================================
+// FUNÇÕES BÁSICAS
+// ======================================================
+
 function rolarD6() {
     return Math.floor(Math.random() * 6) + 1;
 }
@@ -15,6 +19,10 @@ function rolarDado(lados) {
 function escolher(lista) {
     return lista[Math.floor(Math.random() * lista.length)];
 }
+
+// ======================================================
+// MISSÕES
+// ======================================================
 
 const tipos = {
     "Caça": [
@@ -190,6 +198,8 @@ function salvarMissao() {
 function atualizarHistorico() {
     const area = document.getElementById("historico");
 
+    if (!area) return;
+
     if (historico.length === 0) {
         area.innerHTML = `
             <div class="muted">
@@ -215,13 +225,21 @@ function carregarHistorico(i) {
 function limparMissao() {
     missaoAtual = null;
 
-    document.getElementById("resultadoMissao").innerHTML = `
-        <div class="empty">
-            [ AGUARDANDO ROLAGEM ]<br>
-            Clique em "Gerar missão".
-        </div>
-    `;
+    const resultado = document.getElementById("resultadoMissao");
+
+    if (resultado) {
+        resultado.innerHTML = `
+            <div class="empty">
+                [ AGUARDANDO ROLAGEM ]<br>
+                Clique em "Gerar missão".
+            </div>
+        `;
+    }
 }
+
+// ======================================================
+// MERCADORIAS
+// ======================================================
 
 const mercadorias = {
     "Comum": [
@@ -318,6 +336,8 @@ function renderizarEstoque() {
 
     const resultado = document.getElementById("resultadoMercadorias");
 
+    if (!resultado) return;
+
     resultado.innerHTML = estoqueAtual.map(item => `
         <div class="result-block">
             <div class="stock-number">
@@ -340,11 +360,7 @@ function renderizarEstoque() {
 
             ${
                 item.detalhe
-                    ? `
-                        <div class="item-detail">
-                            ${item.detalhe}
-                        </div>
-                    `
+                    ? `<div class="item-detail">${item.detalhe}</div>`
                     : ""
             }
         </div>
@@ -374,8 +390,8 @@ ${item.nome}
         texto += "\n\n";
     });
 
-    const objetos = document.getElementById("objetosParanormais").value;
-    const vales = document.getElementById("valesFiltros").value;
+    const objetos = document.getElementById("objetosParanormais")?.value || "";
+    const vales = document.getElementById("valesFiltros")?.value || "";
 
     texto += `MERCADORIAS ESPECIAIS
 
@@ -401,13 +417,21 @@ async function copiarEstoque() {
 function limparEstoque() {
     estoqueAtual = [];
 
-    document.getElementById("resultadoMercadorias").innerHTML = `
-        <div class="empty">
-            [ ESTOQUE VAZIO ]<br>
-            Clique em "Gerar estoque".
-        </div>
-    `;
+    const resultado = document.getElementById("resultadoMercadorias");
+
+    if (resultado) {
+        resultado.innerHTML = `
+            <div class="empty">
+                [ ESTOQUE VAZIO ]<br>
+                Clique em "Gerar estoque".
+            </div>
+        `;
+    }
 }
+
+// ======================================================
+// ABAS
+// ======================================================
 
 function mostrarAba(nome, botao) {
     document.querySelectorAll(".aba").forEach(aba => {
@@ -420,9 +444,7 @@ function mostrarAba(nome, botao) {
 
     const aba = document.getElementById(nome);
 
-    if (!aba) {
-        return;
-    }
+    if (!aba) return;
 
     aba.classList.add("active");
 
@@ -430,16 +452,20 @@ function mostrarAba(nome, botao) {
         botao.classList.add("active");
     }
 
-    if (nome === "npcs") {
-        carregarNPCs();
-    }
+    if (nome === "npcs") carregarNPCs();
+    if (nome === "rolador") setTimeout(redimensionarRolador3D, 50);
+    if (nome === "anotacoes") carregarAnotacoes();
+    if (nome === "criaturas") carregarCriaturas();
+    if (nome === "itens") carregarItens();
 
-    if (nome === "rolador") {
-        setTimeout(() => {
-            redimensionarRolador3D();
-        }, 50);
-    }
+    if (nome === "ordem-turnos") {
+        carregarOrdemTurnos();
 }
+}
+
+// ======================================================
+// NPCS
+// ======================================================
 
 const formNpc = document.getElementById("form-npc");
 
@@ -447,9 +473,9 @@ if (formNpc) {
     formNpc.addEventListener("submit", async event => {
         event.preventDefault();
 
-        const nome = document.getElementById("nome").value;
-        const faccao = document.getElementById("faccao").value;
-        const informacao = document.getElementById("informacao").value;
+        const nome = document.getElementById("nome")?.value || "";
+        const faccao = document.getElementById("faccao")?.value || "";
+        const informacao = document.getElementById("informacao")?.value || "";
         const idEditando = formNpc.dataset.editando;
 
         try {
@@ -457,9 +483,7 @@ if (formNpc) {
                 ? `/api/npcs/${idEditando}`
                 : "/api/npcs";
 
-            const metodo = idEditando
-                ? "PUT"
-                : "POST";
+            const metodo = idEditando ? "PUT" : "POST";
 
             const resposta = await fetch(url, {
                 method: metodo,
@@ -476,16 +500,17 @@ if (formNpc) {
             const resultado = await resposta.json();
 
             if (!resposta.ok) {
-                throw new Error(
-                    resultado.erro || "Erro ao salvar NPC"
-                );
+                throw new Error(resultado.erro || "Erro ao salvar NPC");
             }
 
             formNpc.reset();
             delete formNpc.dataset.editando;
 
-            formNpc.querySelector("button").textContent =
-                "Adicionar NPC";
+            const botao = formNpc.querySelector("button");
+
+            if (botao) {
+                botao.textContent = "Adicionar NPC";
+            }
 
             await carregarNPCs();
 
@@ -541,7 +566,6 @@ async function carregarNPCs(filtro = "") {
                 </div>
 
                 <div class="npc-actions">
-
                     <button onclick="editarNPC(${npc.id})">
                         Editar
                     </button>
@@ -549,7 +573,6 @@ async function carregarNPCs(filtro = "") {
                     <button onclick="excluirNPC(${npc.id})">
                         Excluir
                     </button>
-
                 </div>
             </div>
         `).join("");
@@ -566,189 +589,88 @@ async function carregarNPCs(filtro = "") {
 }
 
 async function excluirNPC(id) {
-    const confirmar = confirm(
-        "Deseja realmente excluir este NPC?"
-    );
-
-    if (!confirmar) return;
+    if (!confirm("Deseja realmente excluir este NPC?")) return;
 
     try {
-        const resposta = await fetch(
-            `/api/npcs/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
+        const resposta = await fetch(`/api/npcs/${id}`, {
+            method: "DELETE"
+        });
 
         const resultado = await resposta.json();
 
         if (!resposta.ok) {
-            throw new Error(
-                resultado.erro ||
-                "Erro ao excluir NPC"
-            );
+            throw new Error(resultado.erro || "Erro ao excluir NPC");
         }
 
         await carregarNPCs();
 
     } catch (erro) {
-        console.error(
-            "Erro ao excluir NPC:",
-            erro
-        );
-
-        alert(
-            "Não foi possível excluir o NPC."
-        );
+        console.error("Erro ao excluir NPC:", erro);
+        alert("Não foi possível excluir o NPC.");
     }
 }
 
 async function editarNPC(id) {
     try {
-        const resposta =
-            await fetch("/api/npcs");
+        const resposta = await fetch("/api/npcs");
+        const npcs = await resposta.json();
 
-        const npcs =
-            await resposta.json();
-
-        const npc =
-            npcs.find(npc => npc.id === id);
+        const npc = npcs.find(npc => Number(npc.id) === Number(id));
 
         if (!npc) {
             alert("NPC não encontrado.");
             return;
         }
 
-        document.getElementById("nome").value =
-            npc.nome;
+        document.getElementById("nome").value = npc.nome;
+        document.getElementById("faccao").value = npc.faccao || "";
+        document.getElementById("informacao").value = npc.informacao || "";
 
-        document.getElementById("faccao").value =
-            npc.faccao || "";
+        const formulario = document.getElementById("form-npc");
 
-        document.getElementById("informacao").value =
-            npc.informacao || "";
+        formulario.dataset.editando = id;
 
-        document.getElementById(
-            "form-npc"
-        ).dataset.editando = id;
-
-        document.getElementById(
-            "form-npc"
-        ).querySelector("button").textContent =
+        formulario.querySelector("button").textContent =
             "Salvar alterações";
 
     } catch (erro) {
-        console.error(
-            "Erro ao carregar NPC:",
-            erro
-        );
-
-        alert(
-            "Não foi possível carregar o NPC."
-        );
+        console.error("Erro ao carregar NPC:", erro);
+        alert("Não foi possível carregar o NPC.");
     }
 }
 
-const pesquisaNPC =
-    document.getElementById("pesquisa-npc");
+const pesquisaNPC = document.getElementById("pesquisa-npc");
 
 if (pesquisaNPC) {
-    pesquisaNPC.addEventListener(
-        "input",
-        () => {
-            carregarNPCs(
-                pesquisaNPC.value
-            );
-        }
-    );
+    pesquisaNPC.addEventListener("input", () => {
+        carregarNPCs(pesquisaNPC.value);
+    });
 }
+
+// ======================================================
+// GERADOR DE NPC
+// ======================================================
 
 const dadosNPC = {
     nomes: {
         masculino: [
-            "Alexei",
-            "Alexander",
-            "Andrei",
-            "Anton",
-            "Artem",
-            "Boris",
-            "Daniil",
-            "Denis",
-            "Dmitri",
-            "Fyodor",
-            "Igor",
-            "Ilya",
-            "Ivan",
-            "Kirill",
-            "Konstantin",
-            "Leonid",
-            "Lev",
-            "Maksim",
-            "Mikhail",
-            "Nikita",
-            "Nikolai",
-            "Oleg",
-            "Pavel",
-            "Roman",
-            "Ruslan",
-            "Sergei",
-            "Semyon",
-            "Stanislav",
-            "Stepan",
-            "Timofey",
-            "Vadim",
-            "Valery",
-            "Vasily",
-            "Viktor",
-            "Vladimir",
-            "Yaroslav",
-            "Yegor",
-            "Yuri",
-            "Arkady",
-            "Grigori"
+            "Alexei","Alexander","Andrei","Anton","Artem","Boris",
+            "Daniil","Denis","Dmitri","Fyodor","Igor","Ilya",
+            "Ivan","Kirill","Konstantin","Leonid","Lev","Maksim",
+            "Mikhail","Nikita","Nikolai","Oleg","Pavel","Roman",
+            "Ruslan","Sergei","Semyon","Stanislav","Stepan",
+            "Timofey","Vadim","Valery","Vasily","Viktor",
+            "Vladimir","Yaroslav","Yegor","Yuri","Arkady","Grigori"
         ],
 
         feminino: [
-            "Alina",
-            "Alisa",
-            "Anastasiya",
-            "Anna",
-            "Arina",
-            "Darya",
-            "Diana",
-            "Ekaterina",
-            "Elena",
-            "Galina",
-            "Irina",
-            "Karina",
-            "Katya",
-            "Ksenia",
-            "Larisa",
-            "Lena",
-            "Lidia",
-            "Lyudmila",
-            "Maria",
-            "Margarita",
-            "Marina",
-            "Nadezhda",
-            "Natalia",
-            "Nina",
-            "Olga",
-            "Polina",
-            "Sofia",
-            "Svetlana",
-            "Tamara",
-            "Tatiana",
-            "Valentina",
-            "Vasilisa",
-            "Vera",
-            "Victoria",
-            "Yana",
-            "Yelena",
-            "Yulia",
-            "Zoya",
-            "Kristina",
-            "Varvara"
+            "Alina","Alisa","Anastasiya","Anna","Arina","Darya",
+            "Diana","Ekaterina","Elena","Galina","Irina","Karina",
+            "Katya","Ksenia","Larisa","Lena","Lidia","Lyudmila",
+            "Maria","Margarita","Marina","Nadezhda","Natalia","Nina",
+            "Olga","Polina","Sofia","Svetlana","Tamara","Tatiana",
+            "Valentina","Vasilisa","Vera","Victoria","Yana",
+            "Yelena","Yulia","Zoya","Kristina","Varvara"
         ]
     },
 
@@ -925,46 +847,18 @@ const dadosNPC = {
     ],
 
     funcoes: [
-        "comerciante",
-        "soldado",
-        "mecânico",
-        "médico",
-        "enfermeiro",
-        "cozinheiro",
-        "batedor",
-        "vigia",
-        "mensageiro",
-        "carregador",
-        "caçador",
-        "catador de sucata",
-        "técnico",
-        "agricultor",
-        "ferreiro",
-        "guarda",
-        "explorador",
-        "trabalhador da manutenção",
-        "responsável pelo estoque",
-        "coletor de recursos",
-        "operador de rádio",
-        "contrabandista",
-        "guia",
-        "artesão",
-        "responsável pela limpeza",
-        "administrador",
-        "motorista",
-        "vigia de entrada",
-        "batedor de túneis",
-        "ajudante de oficina",
-        "costureiro",
-        "fabricante de filtros",
-        "coletor de água",
-        "responsável pela distribuição",
-        "mensageiro entre estações",
-        "responsável por animais",
-        "vigia de depósitos",
-        "especialista em sucata",
-        "carregador de expedições",
-        "trabalhador de estufas"
+        "comerciante","soldado","mecânico","médico","enfermeiro",
+        "cozinheiro","batedor","vigia","mensageiro","carregador",
+        "caçador","catador de sucata","técnico","agricultor","ferreiro",
+        "guarda","explorador","trabalhador da manutenção",
+        "responsável pelo estoque","coletor de recursos","operador de rádio",
+        "contrabandista","guia","artesão","responsável pela limpeza",
+        "administrador","motorista","vigia de entrada","batedor de túneis",
+        "ajudante de oficina","costureiro","fabricante de filtros",
+        "coletor de água","responsável pela distribuição",
+        "mensageiro entre estações","responsável por animais",
+        "vigia de depósitos","especialista em sucata",
+        "carregador de expedições","trabalhador de estufas"
     ],
 
     habitos: [
@@ -1098,42 +992,34 @@ const dadosNPC = {
 };
 
 function gerarNPCIA() {
-    const resultado =
-        document.getElementById("resultadoNPCIA");
+    const resultado = document.getElementById("resultadoNPCIA");
 
     if (!resultado) return;
 
     const faccaoSelecionada =
-        document.getElementById("npc-faccao").value;
+        document.getElementById("npc-faccao")?.value || "";
 
     const generoSelecionado =
-        document.getElementById("npc-genero").value;
+        document.getElementById("npc-genero")?.value || "";
 
     const sexualidadeSelecionada =
-        document.getElementById("npc-sexualidade").value;
+        document.getElementById("npc-sexualidade")?.value || "";
 
     const idadeSelecionada =
-        document.getElementById("npc-idade").value;
+        document.getElementById("npc-idade")?.value || "";
 
     const personalidadeSelecionada =
-        document.getElementById(
-            "npc-personalidade"
-        ).value.trim();
+        document.getElementById("npc-personalidade")?.value.trim() || "";
 
     const genero =
         generoSelecionado ||
-        (
-            Math.random() < 0.5
-                ? "Masculino"
-                : "Feminino"
-        );
+        (Math.random() < 0.5 ? "Masculino" : "Feminino");
 
-    const nome =
-        escolher(
-            genero === "Masculino"
-                ? dadosNPC.nomes.masculino
-                : dadosNPC.nomes.feminino
-        );
+    const nome = escolher(
+        genero === "Masculino"
+            ? dadosNPC.nomes.masculino
+            : dadosNPC.nomes.feminino
+    );
 
     const faccao =
         faccaoSelecionada ||
@@ -1167,26 +1053,13 @@ function gerarNPCIA() {
         personalidadeSelecionada ||
         escolher(dadosNPC.personalidades);
 
-    const aparencia =
-        escolher(dadosNPC.aparencias);
-
-    const comportamento =
-        escolher(dadosNPC.comportamentos);
-
-    const detalhe =
-        escolher(dadosNPC.detalhes);
-
-    const funcao =
-        escolher(dadosNPC.funcoes);
-
-    const habito =
-        escolher(dadosNPC.habitos);
-
-    const motivacao =
-        escolher(dadosNPC.motivacoes);
-
-    const problema =
-        escolher(dadosNPC.problemas);
+    const aparencia = escolher(dadosNPC.aparencias);
+    const comportamento = escolher(dadosNPC.comportamentos);
+    const detalhe = escolher(dadosNPC.detalhes);
+    const funcao = escolher(dadosNPC.funcoes);
+    const habito = escolher(dadosNPC.habitos);
+    const motivacao = escolher(dadosNPC.motivacoes);
+    const problema = escolher(dadosNPC.problemas);
 
     resultado.innerHTML = `
         <div class="result-block">
@@ -1256,13 +1129,16 @@ function gerarNPCIA() {
     `;
 }
 
+// ======================================================
+// ROLADOR 3D
+// ======================================================
+
 let dadoSelecionado = 20;
 
 let cenaDados = null;
 let cameraDados = null;
 let renderizadorDados = null;
 let grupoDados = null;
-
 let dadosVisuais = [];
 
 let rolagemEmAndamento = false;
@@ -1276,241 +1152,137 @@ function criarMaterialDado() {
         metalness: 0.4
     });
 }
+
 function criarGeometriaDado(lados) {
-
     switch (lados) {
-
         case 4:
-            return new THREE.TetrahedronGeometry(
-                1.35,
-                0
-            );
+            return new THREE.TetrahedronGeometry(1.35, 0);
 
         case 6:
-            return new THREE.BoxGeometry(
-                1.9,
-                1.9,
-                1.9
-            );
+            return new THREE.BoxGeometry(1.9, 1.9, 1.9);
 
         case 8:
-            return new THREE.OctahedronGeometry(
-                1.4,
-                0
-            );
+            return new THREE.OctahedronGeometry(1.4, 0);
 
         case 10:
-            return new THREE.BoxGeometry(
-                1.9,
-                1.9,
-                1.9
-            );
+            return new THREE.BoxGeometry(1.9, 1.9, 1.9);
 
         case 12:
-            return new THREE.DodecahedronGeometry(
-                1.35,
-                0
-            );
+            return new THREE.DodecahedronGeometry(1.35, 0);
 
         case 20:
-            return new THREE.IcosahedronGeometry(
-                1.4,
-                0
-            );
-
+            return new THREE.IcosahedronGeometry(1.4, 0);
 
         default:
-            return new THREE.BoxGeometry(
-                1.9,
-                1.9,
-                1.9
-            );
+            return new THREE.BoxGeometry(1.9, 1.9, 1.9);
     }
 }
 
 function criarTextoDado(texto, tamanho = 1.5) {
-    const canvas =
-        document.createElement("canvas");
+    const canvas = document.createElement("canvas");
 
     canvas.width = 512;
     canvas.height = 512;
 
-    const contexto =
-        canvas.getContext("2d");
+    const contexto = canvas.getContext("2d");
 
-    contexto.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    contexto.clearRect(0, 0, canvas.width, canvas.height);
 
-    contexto.fillStyle =
-        "rgba(0, 0, 0, 0.85)";
+    contexto.fillStyle = "rgba(0, 0, 0, 0.85)";
 
     contexto.beginPath();
-
-    contexto.arc(
-        256,
-        256,
-        180,
-        0,
-        Math.PI * 2
-    );
-
+    contexto.arc(256, 256, 180, 0, Math.PI * 2);
     contexto.fill();
 
-    contexto.fillStyle =
-        "#ffffff";
+    contexto.fillStyle = "#ffffff";
+    contexto.font = "bold 190px Arial";
+    contexto.textAlign = "center";
+    contexto.textBaseline = "middle";
 
-    contexto.font =
-        "bold 190px Arial";
+    contexto.fillText(texto, 256, 256);
 
-    contexto.textAlign =
-        "center";
-
-    contexto.textBaseline =
-        "middle";
-
-    contexto.fillText(
-        texto,
-        256,
-        256
-    );
-
-    const textura =
-        new THREE.CanvasTexture(
-            canvas
-        );
+    const textura = new THREE.CanvasTexture(canvas);
 
     textura.needsUpdate = true;
 
-    const material =
-        new THREE.SpriteMaterial({
-            map: textura,
-            transparent: true
-        });
+    const material = new THREE.SpriteMaterial({
+        map: textura,
+        transparent: true
+    });
 
-    const sprite =
-        new THREE.Sprite(material);
+    const sprite = new THREE.Sprite(material);
 
-    sprite.scale.set(
-        tamanho,
-        tamanho,
-        tamanho
-    );
+    sprite.scale.set(tamanho, tamanho, tamanho);
 
     return sprite;
 }
 
 function criarModeloDado(lados) {
-    const grupo =
-        new THREE.Group();
+    const grupo = new THREE.Group();
 
-    const geometria =
-        criarGeometriaDado(lados);
+    const geometria = criarGeometriaDado(lados);
+    const material = criarMaterialDado();
 
-    const material =
-        criarMaterialDado();
-
-    const dado =
-        new THREE.Mesh(
-            geometria,
-            material
-        );
+    const dado = new THREE.Mesh(geometria, material);
 
     dado.castShadow = true;
     dado.receiveShadow = true;
 
     grupo.add(dado);
 
-    const numero =
-        criarTextoDado(
-            lados === 100
-                ? "00"
-                : "?"
-        );
-
-    numero.position.set(
-        0,
-        0,
-        1.45
+    const numero = criarTextoDado(
+        lados === 100 ? "00" : "?"
     );
+
+    numero.position.set(0, 0, 1.45);
 
     grupo.add(numero);
 
-    grupo.userData.numero =
-        numero;
-
-    grupo.userData.valor =
-        null;
-
-    grupo.userData.lados =
-        lados;
+    grupo.userData.numero = numero;
+    grupo.userData.valor = null;
+    grupo.userData.lados = lados;
 
     return grupo;
 }
 
-function atualizarNumeroDado(
-    grupo,
-    valor
-) {
-    if (!grupo) return;
+function atualizarNumeroDado(grupo, valor) {
+    if (!grupo || !grupo.userData.numero) return;
 
-    if (!grupo.userData.numero) {
-        return;
-    }
-
-    const novoNumero =
-        criarTextoDado(
-            String(valor)
-        );
+    const novoNumero = criarTextoDado(String(valor));
 
     novoNumero.position.copy(
         grupo.userData.numero.position
     );
 
-    grupo.remove(
-        grupo.userData.numero
-    );
+    grupo.remove(grupo.userData.numero);
 
     grupo.userData.numero.material.dispose();
 
-    grupo.userData.numero =
-        novoNumero;
+    grupo.userData.numero = novoNumero;
 
     grupo.add(novoNumero);
 
-    grupo.userData.valor =
-        valor;
+    grupo.userData.valor = valor;
 }
 
 function limparGrupoDados() {
-    if (!grupoDados) {
-        return;
-    }
+    if (!grupoDados) return;
 
-    while (
-        grupoDados.children.length > 0
-    ) {
-        const objeto =
-            grupoDados.children[0];
+    while (grupoDados.children.length > 0) {
+        const objeto = grupoDados.children[0];
 
         objeto.traverse(parte => {
-
             if (parte.geometry) {
                 parte.geometry.dispose();
             }
 
             if (parte.material) {
-
                 if (parte.material.map) {
                     parte.material.map.dispose();
                 }
 
                 parte.material.dispose();
             }
-
         });
 
         grupoDados.remove(objeto);
@@ -1522,8 +1294,7 @@ function limparGrupoDados() {
 function criarDadoVisual(lados) {
     limparGrupoDados();
 
-    const dado =
-        criarModeloDado(lados);
+    const dado = criarModeloDado(lados);
 
     grupoDados.add(dado);
 
@@ -1535,11 +1306,8 @@ function criarDadoVisual(lados) {
 function criarD100Visual() {
     limparGrupoDados();
 
-    const centena =
-        criarModeloDado(10);
-
-    const unidade =
-        criarModeloDado(10);
+    const centena = criarModeloDado(10);
+    const unidade = criarModeloDado(10);
 
     centena.position.x = -1.05;
     unidade.position.x = 1.05;
@@ -1559,122 +1327,68 @@ function criarD100Visual() {
 }
 
 function iniciarRolador3D() {
-    const container =
-        document.getElementById(
-            "dice-stage"
-        );
+    const container = document.getElementById("dice-stage");
 
-    if (!container) {
-        return;
-    }
+    if (!container || renderizadorDados) return;
 
-    if (
-        renderizadorDados
-    ) {
-        return;
-    }
+    cenaDados = new THREE.Scene();
 
-    cenaDados =
-        new THREE.Scene();
-
-    cameraDados =
-        new THREE.PerspectiveCamera(
-            45,
-            1,
-            0.1,
-            100
-        );
-
-    cameraDados.position.set(
-        0,
-        1.5,
-        6
+    cameraDados = new THREE.PerspectiveCamera(
+        45,
+        1,
+        0.1,
+        100
     );
 
-    cameraDados.lookAt(
-        0,
-        0,
-        0
-    );
+    cameraDados.position.set(0, 1.5, 6);
+    cameraDados.lookAt(0, 0, 0);
 
-    renderizadorDados =
-        new THREE.WebGLRenderer({
-            antialias: true,
-            alpha: true
-        });
+    renderizadorDados = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true
+    });
 
     renderizadorDados.setPixelRatio(
-        Math.min(
-            window.devicePixelRatio,
-            2
-        )
+        Math.min(window.devicePixelRatio, 2)
     );
 
-    renderizadorDados.setClearColor(
-        0x000000,
-        0
-    );
+    renderizadorDados.setClearColor(0x000000, 0);
 
     container.innerHTML = "";
+    container.appendChild(renderizadorDados.domElement);
 
-    container.appendChild(
-        renderizadorDados.domElement
+    const luzAmbiente = new THREE.HemisphereLight(
+        0xffffff,
+        0x17101f,
+        2.5
     );
 
-    const luzAmbiente =
-        new THREE.HemisphereLight(
-            0xffffff,
-            0x17101f,
-            2.5
-        );
+    cenaDados.add(luzAmbiente);
 
-    cenaDados.add(
-        luzAmbiente
+    const luzPrincipal = new THREE.DirectionalLight(
+        0xffffff,
+        3
     );
 
-    const luzPrincipal =
-        new THREE.DirectionalLight(
-            0xffffff,
-            3
-        );
+    luzPrincipal.position.set(4, 6, 5);
 
-    luzPrincipal.position.set(
-        4,
-        6,
-        5
-    );
+    cenaDados.add(luzPrincipal);
 
-    cenaDados.add(
-        luzPrincipal
-    );
-
-    const luzFrontal =
-        new THREE.PointLight(
-            0xffffff,
-            2,
-            15
-        );
-
-    luzFrontal.position.set(
-        -3,
+    const luzFrontal = new THREE.PointLight(
+        0xffffff,
         2,
-        4
+        15
     );
 
-    cenaDados.add(
-        luzFrontal
-    );
+    luzFrontal.position.set(-3, 2, 4);
 
-    grupoDados =
-        new THREE.Group();
+    cenaDados.add(luzFrontal);
 
-    cenaDados.add(
-        grupoDados
-    );
+    grupoDados = new THREE.Group();
 
-    selecionarDadoVisual(
-        dadoSelecionado
-    );
+    cenaDados.add(grupoDados);
+
+    selecionarDadoVisual(dadoSelecionado);
 
     redimensionarRolador3D();
 
@@ -1687,142 +1401,79 @@ function iniciarRolador3D() {
 }
 
 function selecionarDadoVisual(lados) {
-
-    if (!grupoDados) {
-        return;
-    }
+    if (!grupoDados) return;
 
     if (lados === 100) {
-
         criarD100Visual();
-
     } else {
-
         criarDadoVisual(lados);
-
     }
 }
 
 function selecionarDado(lados) {
-    dadoSelecionado =
-        lados;
+    dadoSelecionado = lados;
 
     const indicador =
-        document.getElementById(
-            "dado-selecionado"
-        );
+        document.getElementById("dado-selecionado");
 
     if (indicador) {
-        indicador.textContent =
-            `d${lados}`;
+        indicador.textContent = `d${lados}`;
     }
 
-    document
-        .querySelectorAll(
-            ".dice-selector button"
-        )
+    document.querySelectorAll(".dice-selector button")
         .forEach(botao => {
-
-            botao.classList.remove(
-                "selected"
-            );
+            botao.classList.remove("selected");
 
             if (
                 botao.textContent
                     .trim()
-                    .toLowerCase()
-                    === `d${lados}`
+                    .toLowerCase() === `d${lados}`
             ) {
-                botao.classList.add(
-                    "selected"
-                );
+                botao.classList.add("selected");
             }
-
         });
 
-    selecionarDadoVisual(
-        lados
-    );
+    selecionarDadoVisual(lados);
 }
 
 function iniciarAnimacaoDados() {
-    if (
-        dadosVisuais.length === 0
-    ) {
-        return;
-    }
+    if (dadosVisuais.length === 0) return;
 
-    rolagemEmAndamento =
-        true;
+    rolagemEmAndamento = true;
+    inicioRolagem = performance.now();
 
-    inicioRolagem =
-        performance.now();
-
-    dadosVisuais.forEach(
-        dado => {
-
-            dado.rotation.x =
-                Math.random() *
-                Math.PI * 2;
-
-            dado.rotation.y =
-                Math.random() *
-                Math.PI * 2;
-
-            dado.rotation.z =
-                Math.random() *
-                Math.PI * 2;
-
-        }
-    );
+    dadosVisuais.forEach(dado => {
+        dado.rotation.x = Math.random() * Math.PI * 2;
+        dado.rotation.y = Math.random() * Math.PI * 2;
+        dado.rotation.z = Math.random() * Math.PI * 2;
+    });
 }
 
-function animarRolador3D(
-    tempo = 0
-) {
-    requestAnimationFrame(
-        animarRolador3D
-    );
+function animarRolador3D(tempo = 0) {
+    requestAnimationFrame(animarRolador3D);
 
     if (
         rolagemEmAndamento &&
         dadosVisuais.length > 0
     ) {
-        const decorrido =
-            tempo -
-            inicioRolagem;
+        const decorrido = tempo - inicioRolagem;
 
-        const progresso =
-            Math.min(
-                decorrido /
-                duracaoRolagem,
-                1
-            );
-
-        const velocidade =
-            0.32 *
-            (1 - progresso);
-
-        dadosVisuais.forEach(
-            dado => {
-
-                dado.rotation.x +=
-                    velocidade;
-
-                dado.rotation.y +=
-                    velocidade * 1.35;
-
-                dado.rotation.z +=
-                    velocidade * 0.75;
-
-            }
+        const progresso = Math.min(
+            decorrido / duracaoRolagem,
+            1
         );
 
-        if (
-            progresso >= 1
-        ) {
-            rolagemEmAndamento =
-                false;
+        const velocidade =
+            0.32 * (1 - progresso);
+
+        dadosVisuais.forEach(dado => {
+            dado.rotation.x += velocidade;
+            dado.rotation.y += velocidade * 1.35;
+            dado.rotation.z += velocidade * 0.75;
+        });
+
+        if (progresso >= 1) {
+            rolagemEmAndamento = false;
         }
     }
 
@@ -1840,9 +1491,7 @@ function animarRolador3D(
 
 function redimensionarRolador3D() {
     const container =
-        document.getElementById(
-            "dice-stage"
-        );
+        document.getElementById("dice-stage");
 
     if (
         !container ||
@@ -1852,21 +1501,12 @@ function redimensionarRolador3D() {
         return;
     }
 
-    const largura =
-        container.clientWidth;
+    const largura = container.clientWidth;
+    const altura = container.clientHeight;
 
-    const altura =
-        container.clientHeight;
+    if (largura <= 0 || altura <= 0) return;
 
-    if (
-        largura <= 0 ||
-        altura <= 0
-    ) {
-        return;
-    }
-
-    cameraDados.aspect =
-        largura / altura;
+    cameraDados.aspect = largura / altura;
 
     cameraDados.updateProjectionMatrix();
 
@@ -1878,20 +1518,10 @@ function redimensionarRolador3D() {
 }
 
 function rolarD100() {
-    const dezenas =
-        Math.floor(
-            Math.random() * 10
-        );
+    const dezenas = Math.floor(Math.random() * 10);
+    const unidades = Math.floor(Math.random() * 10);
 
-    const unidades =
-        Math.floor(
-            Math.random() * 10
-        );
-
-    if (
-        dezenas === 0 &&
-        unidades === 0
-    ) {
+    if (dezenas === 0 && unidades === 0) {
         return {
             dezenas: 0,
             unidades: 0,
@@ -1902,27 +1532,19 @@ function rolarD100() {
     return {
         dezenas,
         unidades,
-        total:
-            dezenas * 10 +
-            unidades
+        total: dezenas * 10 + unidades
     };
 }
 
 function rolarDados() {
     const quantidadeInput =
-        document.getElementById(
-            "quantidade-dados"
-        );
+        document.getElementById("quantidade-dados");
 
     const modificadorInput =
-        document.getElementById(
-            "modificador-dados"
-        );
+        document.getElementById("modificador-dados");
 
     const resultado =
-        document.getElementById(
-            "resultadoRolagem"
-        );
+        document.getElementById("resultadoRolagem");
 
     if (
         !quantidadeInput ||
@@ -1932,36 +1554,21 @@ function rolarDados() {
         return;
     }
 
-    let quantidade =
-        parseInt(
-            quantidadeInput.value
-        );
+    let quantidade = parseInt(
+        quantidadeInput.value
+    );
 
-    let modificador =
-        parseInt(
-            modificadorInput.value
-        );
+    let modificador = parseInt(
+        modificadorInput.value
+    );
 
-    if (
-        isNaN(quantidade)
-    ) {
-        quantidade = 1;
-    }
+    if (isNaN(quantidade)) quantidade = 1;
+    if (isNaN(modificador)) modificador = 0;
 
-    if (
-        isNaN(modificador)
-    ) {
-        modificador = 0;
-    }
-
-    quantidade =
-        Math.max(
-            1,
-            Math.min(
-                100,
-                quantidade
-            )
-        );
+    quantidade = Math.max(
+        1,
+        Math.min(100, quantidade)
+    );
 
     resultado.innerHTML = `
         <div class="empty">
@@ -1971,9 +1578,7 @@ function rolarDados() {
 
     iniciarAnimacaoDados();
 
-    if (
-        dadoSelecionado === 100
-    ) {
+    if (dadoSelecionado === 100) {
         rolarD100Resultado(
             quantidade,
             modificador,
@@ -1985,30 +1590,20 @@ function rolarDados() {
 
     const resultados = [];
 
-    for (
-        let i = 0;
-        i < quantidade;
-        i++
-    ) {
+    for (let i = 0; i < quantidade; i++) {
         resultados.push(
-            rolarDado(
-                dadoSelecionado
-            )
+            rolarDado(dadoSelecionado)
         );
     }
 
-    const soma =
-        resultados.reduce(
-            (total, valor) =>
-                total + valor,
-            0
-        );
+    const soma = resultados.reduce(
+        (total, valor) => total + valor,
+        0
+    );
 
-    const total =
-        soma + modificador;
+    const total = soma + modificador;
 
     setTimeout(() => {
-
         if (
             quantidade === 1 &&
             dadosVisuais[0]
@@ -2021,7 +1616,6 @@ function rolarDados() {
 
         resultado.innerHTML = `
             <div class="result-block">
-
                 <div class="result-label">
                     ROLAGEM
                 </div>
@@ -2029,11 +1623,9 @@ function rolarDados() {
                 <div class="result-value">
                     ${quantidade}d${dadoSelecionado}
                 </div>
-
             </div>
 
             <div class="result-block">
-
                 <div class="result-label">
                     RESULTADOS
                 </div>
@@ -2041,11 +1633,9 @@ function rolarDados() {
                 <div class="result-value">
                     ${resultados.join(" + ")}
                 </div>
-
             </div>
 
             <div class="result-block">
-
                 <div class="result-label">
                     MODIFICADOR
                 </div>
@@ -2053,11 +1643,9 @@ function rolarDados() {
                 <div class="result-value">
                     ${modificador >= 0 ? "+" : ""}${modificador}
                 </div>
-
             </div>
 
             <div class="result-block">
-
                 <div class="result-label">
                     TOTAL
                 </div>
@@ -2065,10 +1653,8 @@ function rolarDados() {
                 <div class="result-value">
                     ${total}
                 </div>
-
             </div>
         `;
-
     }, duracaoRolagem);
 }
 
@@ -2079,28 +1665,18 @@ function rolarD100Resultado(
 ) {
     const resultados = [];
 
-    for (
-        let i = 0;
-        i < quantidade;
-        i++
-    ) {
-        resultados.push(
-            rolarD100()
-        );
+    for (let i = 0; i < quantidade; i++) {
+        resultados.push(rolarD100());
     }
 
-    const soma =
-        resultados.reduce(
-            (total, valor) =>
-                total + valor.total,
-            0
-        );
+    const soma = resultados.reduce(
+        (total, valor) => total + valor.total,
+        0
+    );
 
-    const total =
-        soma + modificador;
+    const total = soma + modificador;
 
     setTimeout(() => {
-
         if (
             quantidade === 1 &&
             dadosVisuais.length === 2
@@ -2118,15 +1694,11 @@ function rolarD100Resultado(
 
         const resultadosTexto =
             resultados
-                .map(
-                    resultado =>
-                        resultado.total
-                )
+                .map(resultado => resultado.total)
                 .join(" + ");
 
         resultado.innerHTML = `
             <div class="result-block">
-
                 <div class="result-label">
                     ROLAGEM
                 </div>
@@ -2134,11 +1706,9 @@ function rolarD100Resultado(
                 <div class="result-value">
                     ${quantidade}d100
                 </div>
-
             </div>
 
             <div class="result-block">
-
                 <div class="result-label">
                     RESULTADOS
                 </div>
@@ -2146,11 +1716,9 @@ function rolarD100Resultado(
                 <div class="result-value">
                     ${resultadosTexto}
                 </div>
-
             </div>
 
             <div class="result-block">
-
                 <div class="result-label">
                     MODIFICADOR
                 </div>
@@ -2158,11 +1726,9 @@ function rolarD100Resultado(
                 <div class="result-value">
                     ${modificador >= 0 ? "+" : ""}${modificador}
                 </div>
-
             </div>
 
             <div class="result-block">
-
                 <div class="result-label">
                     TOTAL
                 </div>
@@ -2170,18 +1736,14 @@ function rolarD100Resultado(
                 <div class="result-value">
                     ${total}
                 </div>
-
             </div>
         `;
-
     }, duracaoRolagem);
 }
 
 function limparRolagem() {
     const resultado =
-        document.getElementById(
-            "resultadoRolagem"
-        );
+        document.getElementById("resultadoRolagem");
 
     if (resultado) {
         resultado.innerHTML = `
@@ -2193,99 +1755,29 @@ function limparRolagem() {
         `;
     }
 
-    rolagemEmAndamento =
-        false;
+    rolagemEmAndamento = false;
 
-    if (
-        dadoSelecionado === 100
-    ) {
+    if (dadoSelecionado === 100) {
         criarD100Visual();
     } else {
-        criarDadoVisual(
-            dadoSelecionado
-        );
+        criarDadoVisual(dadoSelecionado);
     }
 }
 
-window.rolarDados =
-    rolarDados;
-
-window.selecionarDado =
-    selecionarDado;
-
-window.limparRolagem =
-    limparRolagem;
-
-window.gerarMissao =
-    gerarMissao;
-
-window.copiarMissao =
-    copiarMissao;
-
-window.salvarMissao =
-    salvarMissao;
-
-window.limparMissao =
-    limparMissao;
-
-window.carregarHistorico =
-    carregarHistorico;
-
-window.gerarEstoque =
-    gerarEstoque;
-
-window.copiarEstoque =
-    copiarEstoque;
-
-window.limparEstoque =
-    limparEstoque;
-
-window.mostrarAba =
-    mostrarAba;
-
-window.editarNPC =
-    editarNPC;
-
-window.excluirNPC =
-    excluirNPC;
-
-window.carregarNPCs =
-    carregarNPCs;
-
-window.gerarNPCIA =
-    gerarNPCIA;
-
-window.addEventListener(
-    "DOMContentLoaded",
-    () => {
-        iniciarRolador3D();
-        carregarNPCs();
-    }
-);
-
 // ======================================================
-// ANOTAÇÕES DO MESTRE
+// ANOTAÇÕES
 // ======================================================
 
 let anotacaoEditando = null;
 let anotacoesCache = [];
 
-
-// ======================================================
-// CARREGAR ANOTAÇÕES
-// ======================================================
-
 async function carregarAnotacoes() {
-
     const lista =
         document.getElementById("lista-anotacoes");
 
-    if (!lista) {
-        return;
-    }
+    if (!lista) return;
 
     try {
-
         const resposta =
             await fetch("/api/anotacoes");
 
@@ -2303,7 +1795,6 @@ async function carregarAnotacoes() {
         renderizarAnotacoes(anotacoes);
 
     } catch (erro) {
-
         console.error(
             "Erro ao carregar anotações:",
             erro
@@ -2317,41 +1808,29 @@ async function carregarAnotacoes() {
     }
 }
 
-
-// ======================================================
-// RENDERIZAR ANOTAÇÕES
-// ======================================================
-
 function renderizarAnotacoes(anotacoes) {
-
     const lista =
         document.getElementById("lista-anotacoes");
 
-    if (!lista) {
-        return;
-    }
+    if (!lista) return;
 
     lista.innerHTML = "";
 
     if (anotacoes.length === 0) {
-
         lista.innerHTML = `
             <div class="muted">
                 Nenhuma anotação salva.
             </div>
         `;
-
         return;
     }
 
     anotacoes.forEach(anotacao => {
-
         const item =
             document.createElement("div");
 
         item.className =
             "anotacao-item";
-
 
         const titulo =
             document.createElement("div");
@@ -2362,7 +1841,6 @@ function renderizarAnotacoes(anotacoes) {
         titulo.textContent =
             anotacao.titulo;
 
-
         const conteudo =
             document.createElement("div");
 
@@ -2372,13 +1850,11 @@ function renderizarAnotacoes(anotacoes) {
         conteudo.textContent =
             anotacao.conteudo;
 
-
         const acoes =
             document.createElement("div");
 
         acoes.className =
             "anotacao-acoes";
-
 
         const botaoEditar =
             document.createElement("button");
@@ -2388,11 +1864,8 @@ function renderizarAnotacoes(anotacoes) {
 
         botaoEditar.addEventListener(
             "click",
-            () => {
-                editarAnotacao(anotacao.id);
-            }
+            () => editarAnotacao(anotacao.id)
         );
-
 
         const botaoExcluir =
             document.createElement("button");
@@ -2402,65 +1875,30 @@ function renderizarAnotacoes(anotacoes) {
 
         botaoExcluir.addEventListener(
             "click",
-            () => {
-                excluirAnotacao(anotacao.id);
-            }
+            () => excluirAnotacao(anotacao.id)
         );
 
+        acoes.appendChild(botaoEditar);
+        acoes.appendChild(botaoExcluir);
 
-        acoes.appendChild(
-            botaoEditar
-        );
+        item.appendChild(titulo);
+        item.appendChild(conteudo);
+        item.appendChild(acoes);
 
-        acoes.appendChild(
-            botaoExcluir
-        );
-
-
-        item.appendChild(
-            titulo
-        );
-
-        item.appendChild(
-            conteudo
-        );
-
-        item.appendChild(
-            acoes
-        );
-
-
-        lista.appendChild(
-            item
-        );
+        lista.appendChild(item);
     });
 }
 
-
-// ======================================================
-// SALVAR / EDITAR ANOTAÇÃO
-// ======================================================
-
 async function salvarAnotacao(evento) {
-
     evento.preventDefault();
 
-
     const campoTitulo =
-        document.getElementById(
-            "titulo-anotacao"
-        );
+        document.getElementById("titulo-anotacao");
 
     const campoConteudo =
-        document.getElementById(
-            "conteudo-anotacao"
-        );
+        document.getElementById("conteudo-anotacao");
 
-
-    if (!campoTitulo || !campoConteudo) {
-        return;
-    }
-
+    if (!campoTitulo || !campoConteudo) return;
 
     const titulo =
         campoTitulo.value.trim();
@@ -2468,56 +1906,37 @@ async function salvarAnotacao(evento) {
     const conteudo =
         campoConteudo.value.trim();
 
-
     if (!titulo || !conteudo) {
-
-        alert(
-            "Preencha o título e o conteúdo."
-        );
-
+        alert("Preencha o título e o conteúdo.");
         return;
     }
 
-
     try {
-
         const editando =
             anotacaoEditando !== null;
-
 
         const url =
             editando
                 ? `/api/anotacoes/${anotacaoEditando}`
                 : "/api/anotacoes";
 
-
         const metodo =
-            editando
-                ? "PUT"
-                : "POST";
-
+            editando ? "PUT" : "POST";
 
         const resposta =
-            await fetch(
-                url,
-                {
-                    method: metodo,
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        titulo: titulo,
-                        conteudo: conteudo
-                    })
-                }
-            );
-
+            await fetch(url, {
+                method: metodo,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    titulo,
+                    conteudo
+                })
+            });
 
         if (!resposta.ok) {
-
             const erro =
                 await resposta.json()
                     .catch(() => null);
@@ -2528,21 +1947,16 @@ async function salvarAnotacao(evento) {
             );
         }
 
-
         campoTitulo.value = "";
         campoConteudo.value = "";
 
         anotacaoEditando = null;
 
-
         atualizarEstadoFormulario();
-
 
         await carregarAnotacoes();
 
-
     } catch (erro) {
-
         console.error(
             "Erro ao salvar anotação:",
             erro
@@ -2554,23 +1968,14 @@ async function salvarAnotacao(evento) {
     }
 }
 
-
-// ======================================================
-// EDITAR ANOTAÇÃO
-// ======================================================
-
 function editarAnotacao(id) {
-
     const anotacao =
         anotacoesCache.find(
-            item => Number(item.id) === Number(id)
+            item =>
+                Number(item.id) === Number(id)
         );
 
-
-    if (!anotacao) {
-        return;
-    }
-
+    if (!anotacao) return;
 
     const campoTitulo =
         document.getElementById(
@@ -2582,11 +1987,7 @@ function editarAnotacao(id) {
             "conteudo-anotacao"
         );
 
-
-    if (!campoTitulo || !campoConteudo) {
-        return;
-    }
-
+    if (!campoTitulo || !campoConteudo) return;
 
     campoTitulo.value =
         anotacao.titulo;
@@ -2594,37 +1995,24 @@ function editarAnotacao(id) {
     campoConteudo.value =
         anotacao.conteudo;
 
-
     anotacaoEditando =
         Number(anotacao.id);
 
-
     atualizarEstadoFormulario();
-
 
     campoTitulo.focus();
 }
 
-
-// ======================================================
-// EXCLUIR ANOTAÇÃO
-// ======================================================
-
 async function excluirAnotacao(id) {
-
-    const confirmar =
-        confirm(
+    if (
+        !confirm(
             "Deseja realmente excluir esta anotação?"
-        );
-
-
-    if (!confirmar) {
+        )
+    ) {
         return;
     }
 
-
     try {
-
         const resposta =
             await fetch(
                 `/api/anotacoes/${id}`,
@@ -2633,9 +2021,7 @@ async function excluirAnotacao(id) {
                 }
             );
 
-
         if (!resposta.ok) {
-
             const erro =
                 await resposta.json()
                     .catch(() => null);
@@ -2646,21 +2032,17 @@ async function excluirAnotacao(id) {
             );
         }
 
-
         if (
             anotacaoEditando !== null &&
-            Number(anotacaoEditando) === Number(id)
+            Number(anotacaoEditando) ===
+                Number(id)
         ) {
-
             cancelarEdicao();
         }
 
-
         await carregarAnotacoes();
 
-
     } catch (erro) {
-
         console.error(
             "Erro ao excluir anotação:",
             erro
@@ -2672,13 +2054,7 @@ async function excluirAnotacao(id) {
     }
 }
 
-
-// ======================================================
-// CANCELAR EDIÇÃO
-// ======================================================
-
 function cancelarEdicao() {
-
     const formulario =
         document.getElementById(
             "form-anotacao"
@@ -2688,44 +2064,29 @@ function cancelarEdicao() {
         formulario.reset();
     }
 
-
     anotacaoEditando = null;
 
     atualizarEstadoFormulario();
 }
 
-
-// ======================================================
-// ATUALIZAR BOTÃO DO FORMULÁRIO
-// ======================================================
-
 function atualizarEstadoFormulario() {
-
     const botao =
         document.querySelector(
             "#form-anotacao button[type='submit']"
         );
 
-
-    if (!botao) {
-        return;
-    }
-
+    if (!botao) return;
 
     if (anotacaoEditando !== null) {
-
         botao.textContent =
             "Salvar alterações";
-
 
         let botaoCancelar =
             document.getElementById(
                 "cancelar-edicao-anotacao"
             );
 
-
         if (!botaoCancelar) {
-
             botaoCancelar =
                 document.createElement(
                     "button"
@@ -2740,87 +2101,61 @@ function atualizarEstadoFormulario() {
             botaoCancelar.textContent =
                 "Cancelar edição";
 
-
             botaoCancelar.addEventListener(
                 "click",
                 cancelarEdicao
             );
-
 
             botao.parentElement.appendChild(
                 botaoCancelar
             );
         }
 
-
     } else {
-
         botao.textContent =
             "Salvar anotação";
-
 
         const botaoCancelar =
             document.getElementById(
                 "cancelar-edicao-anotacao"
             );
 
-
         if (botaoCancelar) {
-
             botaoCancelar.remove();
         }
     }
 }
 
-
-// ======================================================
-// PESQUISA DE ANOTAÇÕES
-// ======================================================
-
 function pesquisarAnotacoes() {
-
     const campo =
         document.getElementById(
             "pesquisa-anotacao"
         );
 
-
-    if (!campo) {
-        return;
-    }
-
+    if (!campo) return;
 
     const pesquisa =
-        campo.value
-            .trim()
-            .toLowerCase();
-
+        campo.value.trim().toLowerCase();
 
     if (!pesquisa) {
-
         renderizarAnotacoes(
             anotacoesCache
         );
-
         return;
     }
-
 
     const resultados =
         anotacoesCache.filter(
             anotacao => {
-
                 const titulo =
                     String(
                         anotacao.titulo || ""
                     ).toLowerCase();
 
-
                 const conteudo =
                     String(
                         anotacao.conteudo || ""
                     ).toLowerCase();
-
 
                 return (
                     titulo.includes(pesquisa) ||
@@ -2829,69 +2164,35 @@ function pesquisarAnotacoes() {
             }
         );
 
-
-    renderizarAnotacoes(
-        resultados
-    );
+    renderizarAnotacoes(resultados);
 }
 
-
-// ======================================================
-// INICIALIZAÇÃO DAS ANOTAÇÕES
-// ======================================================
-
 function inicializarAnotacoes() {
-
     const formulario =
         document.getElementById(
             "form-anotacao"
         );
 
-
     if (formulario) {
-
         formulario.addEventListener(
             "submit",
             salvarAnotacao
         );
     }
 
-
     const pesquisa =
         document.getElementById(
             "pesquisa-anotacao"
         );
 
-
     if (pesquisa) {
-
         pesquisa.addEventListener(
             "input",
             pesquisarAnotacoes
         );
     }
 
-
     carregarAnotacoes();
-}
-
-
-// ======================================================
-// INICIAR
-// ======================================================
-
-if (
-    document.readyState === "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        inicializarAnotacoes
-    );
-
-} else {
-
-    inicializarAnotacoes();
 }
 
 // ======================================================
@@ -2899,31 +2200,19 @@ if (
 // ======================================================
 
 let criaturaEditando = null;
-
 let criaturasCache = [];
 
-
-// ======================================================
-// CARREGAR CRIATURAS
-// ======================================================
-
 async function carregarCriaturas() {
-
     const lista =
         document.getElementById(
             "lista-criaturas"
         );
 
-    if (!lista) {
-        return;
-    }
+    if (!lista) return;
 
     try {
-
         const resposta =
-            await fetch(
-                "/api/criaturas"
-            );
+            await fetch("/api/criaturas");
 
         if (!resposta.ok) {
             throw new Error(
@@ -2942,7 +2231,6 @@ async function carregarCriaturas() {
         );
 
     } catch (erro) {
-
         console.error(
             "Erro ao carregar criaturas:",
             erro
@@ -2956,67 +2244,40 @@ async function carregarCriaturas() {
     }
 }
 
-
-// ======================================================
-// RENDERIZAR CRIATURAS
-// ======================================================
-
-function renderizarCriaturas(
-    criaturas
-) {
-
+function renderizarCriaturas(criaturas) {
     const lista =
         document.getElementById(
             "lista-criaturas"
         );
 
-    if (!lista) {
-        return;
-    }
+    if (!lista) return;
 
     lista.innerHTML = "";
 
-
     if (criaturas.length === 0) {
-
         lista.innerHTML = `
             <div class="muted">
                 Nenhuma criatura cadastrada.
             </div>
         `;
-
         return;
     }
 
-
     criaturas.forEach(criatura => {
-
         const item =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         item.className =
             "criatura-item";
 
-
-        // ------------------------------------------
-        // CABEÇALHO
-        // ------------------------------------------
-
         const cabecalho =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         cabecalho.className =
             "criatura-cabecalho";
 
-
         const nome =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         nome.className =
             "criatura-nome";
@@ -3024,11 +2285,8 @@ function renderizarCriaturas(
         nome.textContent =
             criatura.nome;
 
-
         const vd =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         vd.className =
             "criatura-vd";
@@ -3036,33 +2294,17 @@ function renderizarCriaturas(
         vd.textContent =
             `VD ${criatura.vd}`;
 
-
-        cabecalho.appendChild(
-            nome
-        );
-
-        cabecalho.appendChild(
-            vd
-        );
-
-
-        // ------------------------------------------
-        // ELEMENTOS
-        // ------------------------------------------
+        cabecalho.appendChild(nome);
+        cabecalho.appendChild(vd);
 
         const elementos =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         elementos.className =
             "criatura-elementos";
 
-
         const elemento =
-            document.createElement(
-                "span"
-            );
+            document.createElement("span");
 
         elemento.className =
             "criatura-elemento";
@@ -3070,20 +2312,11 @@ function renderizarCriaturas(
         elemento.textContent =
             criatura.elemento;
 
+        elementos.appendChild(elemento);
 
-        elementos.appendChild(
-            elemento
-        );
-
-
-        if (
-            criatura.elemento_secundario
-        ) {
-
+        if (criatura.elemento_secundario) {
             const secundario =
-                document.createElement(
-                    "span"
-                );
+                document.createElement("span");
 
             secundario.className =
                 "criatura-elemento secundario";
@@ -3091,44 +2324,24 @@ function renderizarCriaturas(
             secundario.textContent =
                 criatura.elemento_secundario;
 
-
-            elementos.appendChild(
-                secundario
-            );
+            elementos.appendChild(secundario);
         }
 
-
-        // ------------------------------------------
-        // STATUS
-        // ------------------------------------------
-
         const status =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         status.className =
             "criatura-status";
 
-
-        function criarStatus(
-            label,
-            valor
-        ) {
-
+        function criarStatus(label, valor) {
             const box =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
             box.className =
                 "criatura-status-box";
 
-
             const nomeStatus =
-                document.createElement(
-                    "span"
-                );
+                document.createElement("span");
 
             nomeStatus.className =
                 "criatura-status-label";
@@ -3136,11 +2349,8 @@ function renderizarCriaturas(
             nomeStatus.textContent =
                 label;
 
-
             const valorStatus =
-                document.createElement(
-                    "span"
-                );
+                document.createElement("span");
 
             valorStatus.className =
                 "criatura-status-valor";
@@ -3148,19 +2358,11 @@ function renderizarCriaturas(
             valorStatus.textContent =
                 valor;
 
-
-            box.appendChild(
-                nomeStatus
-            );
-
-            box.appendChild(
-                valorStatus
-            );
-
+            box.appendChild(nomeStatus);
+            box.appendChild(valorStatus);
 
             return box;
         }
-
 
         status.appendChild(
             criarStatus(
@@ -3183,149 +2385,83 @@ function renderizarCriaturas(
             )
         );
 
-
-        // ------------------------------------------
-        // AÇÕES
-        // ------------------------------------------
-
         const acoes =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         acoes.className =
             "criatura-acoes";
 
-
         const botaoEditar =
-            document.createElement(
-                "button"
-            );
+            document.createElement("button");
 
         botaoEditar.textContent =
             "Editar";
 
         botaoEditar.addEventListener(
             "click",
-            () => {
-
-                editarCriatura(
-                    criatura.id
-                );
-
-            }
+            () => editarCriatura(criatura.id)
         );
 
-
         const botaoExcluir =
-            document.createElement(
-                "button"
-            );
+            document.createElement("button");
 
         botaoExcluir.textContent =
             "Excluir";
 
         botaoExcluir.addEventListener(
             "click",
-            () => {
-
-                excluirCriatura(
-                    criatura.id
-                );
-
-            }
+            () => excluirCriatura(criatura.id)
         );
 
+        acoes.appendChild(botaoEditar);
+        acoes.appendChild(botaoExcluir);
 
-        acoes.appendChild(
-            botaoEditar
-        );
+        item.appendChild(cabecalho);
+        item.appendChild(elementos);
+        item.appendChild(status);
+        item.appendChild(acoes);
 
-        acoes.appendChild(
-            botaoExcluir
-        );
-
-
-        // ------------------------------------------
-        // MONTAR CARTÃO
-        // ------------------------------------------
-
-        item.appendChild(
-            cabecalho
-        );
-
-        item.appendChild(
-            elementos
-        );
-
-        item.appendChild(
-            status
-        );
-
-        item.appendChild(
-            acoes
-        );
-
-
-        lista.appendChild(
-            item
-        );
+        lista.appendChild(item);
     });
 }
 
-
-// ======================================================
-// SALVAR / EDITAR CRIATURA
-// ======================================================
-
-async function salvarCriatura(
-    evento
-) {
-
+async function salvarCriatura(evento) {
     evento.preventDefault();
-
 
     const nome =
         document.getElementById(
             "nome-criatura"
         ).value.trim();
 
-
     const elemento =
         document.getElementById(
             "elemento-criatura"
         ).value.trim();
-
 
     const elementoSecundario =
         document.getElementById(
             "elemento-secundario-criatura"
         ).value.trim();
 
-
     const vd =
         document.getElementById(
             "vd-criatura"
         ).value;
-
 
     const vida =
         document.getElementById(
             "vida-criatura"
         ).value;
 
-
     const defesa =
         document.getElementById(
             "defesa-criatura"
         ).value;
 
-
     const deslocamento =
         document.getElementById(
             "deslocamento-criatura"
         ).value.trim();
-
 
     if (
         !nome ||
@@ -3335,78 +2471,47 @@ async function salvarCriatura(
         !defesa ||
         !deslocamento
     ) {
-
         alert(
             "Preencha todos os campos obrigatórios."
         );
-
         return;
     }
 
-
     const editando =
         criaturaEditando !== null;
-
 
     const url =
         editando
             ? `/api/criaturas/${criaturaEditando}`
             : "/api/criaturas";
 
-
     const metodo =
-        editando
-            ? "PUT"
-            : "POST";
-
+        editando ? "PUT" : "POST";
 
     try {
-
         const resposta =
-            await fetch(
-                url,
-                {
-                    method: metodo,
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        nome:
-                            nome,
-
-                        elemento:
-                            elemento,
-
-                        elemento_secundario:
-                            elementoSecundario,
-
-                        vd:
-                            Number(vd),
-
-                        vida:
-                            Number(vida),
-
-                        defesa:
-                            Number(defesa),
-
-                        deslocamento:
-                            deslocamento
-                    })
-                }
-            );
-
+            await fetch(url, {
+                method: metodo,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    nome,
+                    elemento,
+                    elemento_secundario:
+                        elementoSecundario,
+                    vd: Number(vd),
+                    vida: Number(vida),
+                    defesa: Number(defesa),
+                    deslocamento
+                })
+            });
 
         if (!resposta.ok) {
-
             const erro =
                 await resposta.json()
-                    .catch(
-                        () => null
-                    );
+                    .catch(() => null);
 
             throw new Error(
                 erro?.erro ||
@@ -3414,14 +2519,11 @@ async function salvarCriatura(
             );
         }
 
-
         limparFormularioCriatura();
 
         await carregarCriaturas();
 
-
     } catch (erro) {
-
         console.error(
             "Erro ao salvar criatura:",
             erro
@@ -3433,121 +2535,86 @@ async function salvarCriatura(
     }
 }
 
-
-// ======================================================
-// EDITAR CRIATURA
-// ======================================================
-
-function editarCriatura(
-    id
-) {
-
+function editarCriatura(id) {
     const criatura =
         criaturasCache.find(
             item =>
-                Number(item.id) ===
-                Number(id)
+                Number(item.id) === Number(id)
         );
 
-
-    if (!criatura) {
-        return;
-    }
-
+    if (!criatura) return;
 
     document.getElementById(
         "nome-criatura"
     ).value =
         criatura.nome;
 
-
     document.getElementById(
         "elemento-criatura"
     ).value =
         criatura.elemento;
-
 
     document.getElementById(
         "elemento-secundario-criatura"
     ).value =
         criatura.elemento_secundario || "";
 
-
     document.getElementById(
         "vd-criatura"
     ).value =
         criatura.vd;
-
 
     document.getElementById(
         "vida-criatura"
     ).value =
         criatura.vida;
 
-
     document.getElementById(
         "defesa-criatura"
     ).value =
         criatura.defesa;
-
 
     document.getElementById(
         "deslocamento-criatura"
     ).value =
         criatura.deslocamento;
 
-
     criaturaEditando =
         Number(criatura.id);
-
 
     const formulario =
         document.getElementById(
             "form-criatura"
         );
 
-
     if (formulario) {
-
         formulario.classList.add(
             "editando"
         );
     }
-
 
     const botao =
         formulario?.querySelector(
             "button[type='submit']"
         );
 
-
     if (botao) {
-
         botao.textContent =
             "Salvar alterações";
     }
-
 
     document.getElementById(
         "nome-criatura"
     ).focus();
 }
 
-
-// ======================================================
-// LIMPAR FORMULÁRIO
-// ======================================================
-
 function limparFormularioCriatura() {
-
     const formulario =
         document.getElementById(
             "form-criatura"
         );
 
-
     if (formulario) {
-
         formulario.reset();
 
         formulario.classList.remove(
@@ -3555,63 +2622,41 @@ function limparFormularioCriatura() {
         );
     }
 
-
-    criaturaEditando =
-        null;
-
+    criaturaEditando = null;
 
     const botao =
         formulario?.querySelector(
             "button[type='submit']"
         );
 
-
     if (botao) {
-
         botao.textContent =
             "Salvar criatura";
     }
 }
 
-
-// ======================================================
-// EXCLUIR CRIATURA
-// ======================================================
-
-async function excluirCriatura(
-    id
-) {
-
-    const confirmar =
-        confirm(
+async function excluirCriatura(id) {
+    if (
+        !confirm(
             "Deseja realmente excluir esta criatura?"
-        );
-
-
-    if (!confirmar) {
+        )
+    ) {
         return;
     }
 
-
     try {
-
         const resposta =
             await fetch(
                 `/api/criaturas/${id}`,
                 {
-                    method:
-                        "DELETE"
+                    method: "DELETE"
                 }
             );
 
-
         if (!resposta.ok) {
-
             const erro =
                 await resposta.json()
-                    .catch(
-                        () => null
-                    );
+                    .catch(() => null);
 
             throw new Error(
                 erro?.erro ||
@@ -3619,22 +2664,16 @@ async function excluirCriatura(
             );
         }
 
-
         if (
             criaturaEditando !== null &&
-            Number(criaturaEditando) ===
-                Number(id)
+            Number(criaturaEditando) === Number(id)
         ) {
-
             limparFormularioCriatura();
         }
 
-
         await carregarCriaturas();
 
-
     } catch (erro) {
-
         console.error(
             "Erro ao excluir criatura:",
             erro
@@ -3646,61 +2685,43 @@ async function excluirCriatura(
     }
 }
 
-
-// ======================================================
-// PESQUISAR CRIATURAS
-// ======================================================
-
 function pesquisarCriaturas() {
-
     const campo =
         document.getElementById(
             "pesquisa-criatura"
         );
 
-
-    if (!campo) {
-        return;
-    }
-
+    if (!campo) return;
 
     const pesquisa =
         campo.value
             .trim()
             .toLowerCase();
 
-
     if (!pesquisa) {
-
         renderizarCriaturas(
             criaturasCache
         );
-
         return;
     }
-
 
     const resultados =
         criaturasCache.filter(
             criatura => {
-
                 const nome =
                     String(
                         criatura.nome || ""
                     ).toLowerCase();
-
 
                 const elemento =
                     String(
                         criatura.elemento || ""
                     ).toLowerCase();
 
-
                 const secundario =
                     String(
                         criatura.elemento_secundario || ""
                     ).toLowerCase();
-
 
                 return (
                     nome.includes(pesquisa) ||
@@ -3710,70 +2731,35 @@ function pesquisarCriaturas() {
             }
         );
 
-
-    renderizarCriaturas(
-        resultados
-    );
+    renderizarCriaturas(resultados);
 }
 
-
-// ======================================================
-// INICIALIZAR CRIATURAS
-// ======================================================
-
 function inicializarCriaturas() {
-
     const formulario =
         document.getElementById(
             "form-criatura"
         );
 
-
     if (formulario) {
-
         formulario.addEventListener(
             "submit",
             salvarCriatura
         );
     }
 
-
     const pesquisa =
         document.getElementById(
             "pesquisa-criatura"
         );
 
-
     if (pesquisa) {
-
         pesquisa.addEventListener(
             "input",
             pesquisarCriaturas
         );
     }
 
-
     carregarCriaturas();
-}
-
-
-// ======================================================
-// INICIAR
-// ======================================================
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        inicializarCriaturas
-    );
-
-} else {
-
-    inicializarCriaturas();
 }
 
 // ======================================================
@@ -3781,31 +2767,19 @@ if (
 // ======================================================
 
 let itemEditando = null;
-
 let itensCache = [];
 
-
-// ======================================================
-// CARREGAR ITENS
-// ======================================================
-
 async function carregarItens() {
-
     const lista =
         document.getElementById(
             "lista-itens"
         );
 
-    if (!lista) {
-        return;
-    }
+    if (!lista) return;
 
     try {
-
         const resposta =
-            await fetch(
-                "/api/itens"
-            );
+            await fetch("/api/itens");
 
         if (!resposta.ok) {
             throw new Error(
@@ -3816,15 +2790,11 @@ async function carregarItens() {
         const itens =
             await resposta.json();
 
-        itensCache =
-            itens;
+        itensCache = itens;
 
-        renderizarItens(
-            itens
-        );
+        renderizarItens(itens);
 
     } catch (erro) {
-
         console.error(
             "Erro ao carregar itens:",
             erro
@@ -3838,39 +2808,26 @@ async function carregarItens() {
     }
 }
 
-
-// ======================================================
-// RENDERIZAR ITENS
-// ======================================================
-
 function renderizarItens(itens) {
-
     const lista =
         document.getElementById(
             "lista-itens"
         );
 
-    if (!lista) {
-        return;
-    }
+    if (!lista) return;
 
     lista.innerHTML = "";
 
-
     if (itens.length === 0) {
-
         lista.innerHTML = `
             <div class="muted">
                 Nenhum item cadastrado.
             </div>
         `;
-
         return;
     }
 
-
     itens.forEach(item => {
-
         const card =
             document.createElement(
                 "div"
@@ -3879,11 +2836,6 @@ function renderizarItens(itens) {
         card.className =
             "item-card";
 
-
-        // ------------------------------------------
-        // CABEÇALHO
-        // ------------------------------------------
-
         const cabecalho =
             document.createElement(
                 "div"
@@ -3891,7 +2843,6 @@ function renderizarItens(itens) {
 
         cabecalho.className =
             "item-cabecalho";
-
 
         const nome =
             document.createElement(
@@ -3904,7 +2855,6 @@ function renderizarItens(itens) {
         nome.textContent =
             item.nome;
 
-
         const tipo =
             document.createElement(
                 "div"
@@ -3913,39 +2863,24 @@ function renderizarItens(itens) {
         tipo.className =
             "item-tipo";
 
-
         if (
             String(item.tipo)
                 .toLowerCase()
                 .includes("amaldi")
         ) {
-
             tipo.classList.add(
                 "amaldicoado"
             );
 
             tipo.textContent =
                 "Objeto amaldiçoado";
-
         } else {
-
             tipo.textContent =
                 "Objeto normal";
         }
 
-
-        cabecalho.appendChild(
-            nome
-        );
-
-        cabecalho.appendChild(
-            tipo
-        );
-
-
-        // ------------------------------------------
-        // CATEGORIA
-        // ------------------------------------------
+        cabecalho.appendChild(nome);
+        cabecalho.appendChild(tipo);
 
         const categoria =
             document.createElement(
@@ -3958,11 +2893,6 @@ function renderizarItens(itens) {
         categoria.textContent =
             item.categoria;
 
-
-        // ------------------------------------------
-        // DESCRIÇÃO
-        // ------------------------------------------
-
         const descricao =
             document.createElement(
                 "div"
@@ -3974,13 +2904,7 @@ function renderizarItens(itens) {
         descricao.textContent =
             item.descricao;
 
-
-        // ------------------------------------------
-        // EFEITO
-        // ------------------------------------------
-
         if (item.efeito) {
-
             const efeito =
                 document.createElement(
                     "div"
@@ -3988,7 +2912,6 @@ function renderizarItens(itens) {
 
             efeito.className =
                 "item-efeito";
-
 
             const tituloEfeito =
                 document.createElement(
@@ -4001,7 +2924,6 @@ function renderizarItens(itens) {
             tituloEfeito.textContent =
                 "Efeito";
 
-
             const textoEfeito =
                 document.createElement(
                     "span"
@@ -4009,7 +2931,6 @@ function renderizarItens(itens) {
 
             textoEfeito.textContent =
                 item.efeito;
-
 
             efeito.appendChild(
                 tituloEfeito
@@ -4019,16 +2940,10 @@ function renderizarItens(itens) {
                 textoEfeito
             );
 
-
             card.appendChild(
                 efeito
             );
         }
-
-
-        // ------------------------------------------
-        // AÇÕES
-        // ------------------------------------------
 
         const acoes =
             document.createElement(
@@ -4038,7 +2953,6 @@ function renderizarItens(itens) {
         acoes.className =
             "item-acoes";
 
-
         const botaoEditar =
             document.createElement(
                 "button"
@@ -4047,17 +2961,10 @@ function renderizarItens(itens) {
         botaoEditar.textContent =
             "Editar";
 
-
         botaoEditar.addEventListener(
             "click",
-            () => {
-
-                editarItem(
-                    item.id
-                );
-            }
+            () => editarItem(item.id)
         );
-
 
         const botaoExcluir =
             document.createElement(
@@ -4067,93 +2974,50 @@ function renderizarItens(itens) {
         botaoExcluir.textContent =
             "Excluir";
 
-
         botaoExcluir.addEventListener(
             "click",
-            () => {
-
-                excluirItem(
-                    item.id
-                );
-            }
+            () => excluirItem(item.id)
         );
 
+        acoes.appendChild(botaoEditar);
+        acoes.appendChild(botaoExcluir);
 
-        acoes.appendChild(
-            botaoEditar
-        );
+        card.appendChild(cabecalho);
+        card.appendChild(categoria);
+        card.appendChild(descricao);
+        card.appendChild(acoes);
 
-        acoes.appendChild(
-            botaoExcluir
-        );
-
-
-        // ------------------------------------------
-        // MONTAR CARD
-        // ------------------------------------------
-
-        card.appendChild(
-            cabecalho
-        );
-
-        card.appendChild(
-            categoria
-        );
-
-        card.appendChild(
-            descricao
-        );
-
-        card.appendChild(
-            acoes
-        );
-
-
-        lista.appendChild(
-            card
-        );
+        lista.appendChild(card);
     });
 }
 
-
-// ======================================================
-// SALVAR / EDITAR ITEM
-// ======================================================
-
 async function salvarItem(evento) {
-
     evento.preventDefault();
-
 
     const nome =
         document.getElementById(
             "nome-item"
         ).value.trim();
 
-
     const tipo =
         document.getElementById(
             "tipo-item"
         ).value;
-
 
     const categoria =
         document.getElementById(
             "categoria-item"
         ).value.trim();
 
-
     const descricao =
         document.getElementById(
             "descricao-item"
         ).value.trim();
 
-
     const efeito =
         document.getElementById(
             "efeito-item"
         ).value.trim();
-
 
     if (
         !nome ||
@@ -4161,72 +3025,44 @@ async function salvarItem(evento) {
         !categoria ||
         !descricao
     ) {
-
         alert(
             "Preencha todos os campos obrigatórios."
         );
-
         return;
     }
 
-
     const editando =
         itemEditando !== null;
-
 
     const url =
         editando
             ? `/api/itens/${itemEditando}`
             : "/api/itens";
 
-
     const metodo =
-        editando
-            ? "PUT"
-            : "POST";
-
+        editando ? "PUT" : "POST";
 
     try {
-
         const resposta =
-            await fetch(
-                url,
-                {
-                    method: metodo,
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        nome:
-                            nome,
-
-                        tipo:
-                            tipo,
-
-                        categoria:
-                            categoria,
-
-                        descricao:
-                            descricao,
-
-                        efeito:
-                            efeito || null
-                    })
-                }
-            );
-
+            await fetch(url, {
+                method: metodo,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    nome,
+                    tipo,
+                    categoria,
+                    descricao,
+                    efeito: efeito || null
+                })
+            });
 
         if (!resposta.ok) {
-
             const erro =
                 await resposta.json()
-                    .catch(
-                        () => null
-                    );
+                    .catch(() => null);
 
             throw new Error(
                 erro?.erro ||
@@ -4234,14 +3070,11 @@ async function salvarItem(evento) {
             );
         }
 
-
         limparFormularioItem();
 
         await carregarItens();
 
-
     } catch (erro) {
-
         console.error(
             "Erro ao salvar item:",
             erro
@@ -4253,107 +3086,76 @@ async function salvarItem(evento) {
     }
 }
 
-
-// ======================================================
-// EDITAR ITEM
-// ======================================================
-
 function editarItem(id) {
-
     const item =
         itensCache.find(
             elemento =>
-                Number(elemento.id) ===
-                Number(id)
+                Number(elemento.id) === Number(id)
         );
 
-
-    if (!item) {
-        return;
-    }
-
+    if (!item) return;
 
     document.getElementById(
         "nome-item"
     ).value =
         item.nome;
 
-
     document.getElementById(
         "tipo-item"
     ).value =
         item.tipo;
-
 
     document.getElementById(
         "categoria-item"
     ).value =
         item.categoria;
 
-
     document.getElementById(
         "descricao-item"
     ).value =
         item.descricao;
-
 
     document.getElementById(
         "efeito-item"
     ).value =
         item.efeito || "";
 
-
     itemEditando =
         Number(item.id);
-
 
     const formulario =
         document.getElementById(
             "form-item"
         );
 
-
     if (formulario) {
-
         formulario.classList.add(
             "editando"
         );
     }
-
 
     const botao =
         formulario?.querySelector(
             "button[type='submit']"
         );
 
-
     if (botao) {
-
         botao.textContent =
             "Salvar alterações";
     }
-
 
     document.getElementById(
         "nome-item"
     ).focus();
 }
 
-
-// ======================================================
-// LIMPAR FORMULÁRIO
-// ======================================================
-
 function limparFormularioItem() {
-
     const formulario =
         document.getElementById(
             "form-item"
         );
 
-
     if (formulario) {
-
         formulario.reset();
 
         formulario.classList.remove(
@@ -4361,61 +3163,41 @@ function limparFormularioItem() {
         );
     }
 
-
-    itemEditando =
-        null;
-
+    itemEditando = null;
 
     const botao =
         formulario?.querySelector(
             "button[type='submit']"
         );
 
-
     if (botao) {
-
         botao.textContent =
             "Salvar item";
     }
 }
 
-
-// ======================================================
-// EXCLUIR ITEM
-// ======================================================
-
 async function excluirItem(id) {
-
-    const confirmar =
-        confirm(
+    if (
+        !confirm(
             "Deseja realmente excluir este item?"
-        );
-
-
-    if (!confirmar) {
+        )
+    ) {
         return;
     }
 
-
     try {
-
         const resposta =
             await fetch(
                 `/api/itens/${id}`,
                 {
-                    method:
-                        "DELETE"
+                    method: "DELETE"
                 }
             );
 
-
         if (!resposta.ok) {
-
             const erro =
                 await resposta.json()
-                    .catch(
-                        () => null
-                    );
+                    .catch(() => null);
 
             throw new Error(
                 erro?.erro ||
@@ -4423,22 +3205,16 @@ async function excluirItem(id) {
             );
         }
 
-
         if (
             itemEditando !== null &&
-            Number(itemEditando) ===
-                Number(id)
+            Number(itemEditando) === Number(id)
         ) {
-
             limparFormularioItem();
         }
 
-
         await carregarItens();
 
-
     } catch (erro) {
-
         console.error(
             "Erro ao excluir item:",
             erro
@@ -4450,73 +3226,51 @@ async function excluirItem(id) {
     }
 }
 
-
-// ======================================================
-// PESQUISAR ITENS
-// ======================================================
-
 function pesquisarItens() {
-
     const campo =
         document.getElementById(
             "pesquisa-item"
         );
 
-
-    if (!campo) {
-        return;
-    }
-
+    if (!campo) return;
 
     const pesquisa =
         campo.value
             .trim()
             .toLowerCase();
 
-
     if (!pesquisa) {
-
-        renderizarItens(
-            itensCache
-        );
-
+        renderizarItens(itensCache);
         return;
     }
-
 
     const resultados =
         itensCache.filter(
             item => {
-
                 const nome =
                     String(
                         item.nome || ""
                     ).toLowerCase();
-
 
                 const tipo =
                     String(
                         item.tipo || ""
                     ).toLowerCase();
 
-
                 const categoria =
                     String(
                         item.categoria || ""
                     ).toLowerCase();
-
 
                 const descricao =
                     String(
                         item.descricao || ""
                     ).toLowerCase();
 
-
                 const efeito =
                     String(
                         item.efeito || ""
                     ).toLowerCase();
-
 
                 return (
                     nome.includes(pesquisa) ||
@@ -4528,68 +3282,686 @@ function pesquisarItens() {
             }
         );
 
-
-    renderizarItens(
-        resultados
-    );
+    renderizarItens(resultados);
 }
 
-
-// ======================================================
-// INICIALIZAR ITENS
-// ======================================================
-
 function inicializarItens() {
-
     const formulario =
         document.getElementById(
             "form-item"
         );
 
-
     if (formulario) {
-
         formulario.addEventListener(
             "submit",
             salvarItem
         );
     }
 
-
     const pesquisa =
         document.getElementById(
             "pesquisa-item"
         );
 
-
     if (pesquisa) {
-
         pesquisa.addEventListener(
             "input",
             pesquisarItens
         );
     }
 
-
     carregarItens();
 }
 
+// ======================================================
+// ORDEM DE TURNOS
+// ======================================================
+
+let turnoEditando = null;
+let ordemTurnosCache = [];
 
 // ======================================================
-// INICIAR
+// CARREGAR ORDEM
 // ======================================================
 
-if (
-    document.readyState ===
-    "loading"
-) {
+async function carregarOrdemTurnos() {
+    const lista =
+        document.getElementById(
+            "lista-ordem-turnos"
+        );
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        inicializarItens
-    );
+    if (!lista) return;
 
-} else {
+    try {
+        const resposta =
+            await fetch("/api/ordem-turnos");
 
-    inicializarItens();
+        if (!resposta.ok) {
+            throw new Error(
+                "Erro ao buscar ordem de turnos."
+            );
+        }
+
+        const dados =
+            await resposta.json();
+
+        ordemTurnosCache =
+            dados;
+
+        renderizarOrdemTurnos(
+            dados
+        );
+
+    } catch (erro) {
+        console.error(
+            "Erro ao carregar ordem de turnos:",
+            erro
+        );
+
+        lista.innerHTML = `
+            <div class="muted">
+                Erro ao carregar ordem de turnos.
+            </div>
+        `;
+    }
 }
+
+// ======================================================
+// RENDERIZAR ORDEM
+// ======================================================
+
+function renderizarOrdemTurnos(participantes) {
+    const lista =
+        document.getElementById(
+            "lista-ordem-turnos"
+        );
+
+    if (!lista) return;
+
+    lista.innerHTML = "";
+
+    if (participantes.length === 0) {
+        lista.innerHTML = `
+            <div class="muted">
+                Nenhum participante na ordem.
+            </div>
+        `;
+
+        return;
+    }
+
+    participantes.forEach(participante => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "ordem-item";
+
+        const nome =
+            document.createElement("div");
+
+        nome.className =
+            "ordem-nome";
+
+        nome.textContent =
+            participante.nome;
+
+        const teste =
+            document.createElement("div");
+
+        teste.className =
+            "ordem-teste";
+
+        teste.textContent =
+            participante.teste;
+
+        const acoes =
+            document.createElement("div");
+
+        acoes.className =
+            "ordem-acoes";
+
+        const botaoEditar =
+            document.createElement("button");
+
+        botaoEditar.type =
+            "button";
+
+        botaoEditar.textContent =
+            "Editar";
+
+        botaoEditar.addEventListener(
+            "click",
+            () => editarTurno(participante.id)
+        );
+
+        const botaoExcluir =
+            document.createElement("button");
+
+        botaoExcluir.type =
+            "button";
+
+        botaoExcluir.textContent =
+            "Excluir";
+
+        botaoExcluir.addEventListener(
+            "click",
+            () => excluirTurno(participante.id)
+        );
+
+        acoes.appendChild(
+            botaoEditar
+        );
+
+        acoes.appendChild(
+            botaoExcluir
+        );
+
+        item.appendChild(nome);
+        item.appendChild(teste);
+        item.appendChild(acoes);
+
+        lista.appendChild(item);
+    });
+}
+
+// ======================================================
+// SALVAR PARTICIPANTE
+// ======================================================
+
+async function salvarTurno(evento) {
+    evento.preventDefault();
+
+    const campoNome =
+        document.getElementById(
+            "nome-turno"
+        );
+
+    const campoTeste =
+        document.getElementById(
+            "teste-turno"
+        );
+
+    if (!campoNome || !campoTeste) {
+        alert(
+            "Campos da ordem de turnos não encontrados."
+        );
+
+        return;
+    }
+
+    const nome =
+        campoNome.value.trim();
+
+    const valorTeste =
+        campoTeste.value.trim();
+
+    if (!nome) {
+        alert(
+            "Informe o nome do participante."
+        );
+
+        campoNome.focus();
+
+        return;
+    }
+
+    if (valorTeste === "") {
+        alert(
+            "Informe a iniciativa."
+        );
+
+        campoTeste.focus();
+
+        return;
+    }
+
+    const teste =
+        Number(valorTeste);
+
+    if (!Number.isFinite(teste)) {
+        alert(
+            "A iniciativa precisa ser um número válido."
+        );
+
+        campoTeste.focus();
+
+        return;
+    }
+
+    try {
+
+        let resposta;
+
+        // ==============================================
+        // EDITAR
+        // ==============================================
+
+        if (turnoEditando !== null) {
+
+            resposta =
+                await fetch(
+                    `/api/ordem-turnos/${turnoEditando}`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            nome,
+                            teste
+                        })
+                    }
+                );
+
+        }
+
+        // ==============================================
+        // ADICIONAR
+        // ==============================================
+
+        else {
+
+            resposta =
+                await fetch(
+                    "/api/ordem-turnos",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            nome,
+                            teste
+                        })
+                    }
+                );
+        }
+
+        const dados =
+            await resposta
+                .json()
+                .catch(() => null);
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados?.erro ||
+                "Erro ao salvar participante."
+            );
+        }
+
+        limparFormularioTurno();
+
+        await carregarOrdemTurnos();
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar participante:",
+            erro
+        );
+
+        alert(
+            "Erro ao salvar:\n" +
+            erro.message
+        );
+    }
+}
+
+// ======================================================
+// EDITAR PARTICIPANTE
+// ======================================================
+
+function editarTurno(id) {
+
+    const participante =
+        ordemTurnosCache.find(
+            item =>
+                Number(item.id) ===
+                Number(id)
+        );
+
+    if (!participante) {
+        return;
+    }
+
+    const campoNome =
+        document.getElementById(
+            "nome-turno"
+        );
+
+    const campoTeste =
+        document.getElementById(
+            "teste-turno"
+        );
+
+    if (!campoNome || !campoTeste) {
+        return;
+    }
+
+    campoNome.value =
+        participante.nome;
+
+    campoTeste.value =
+        participante.teste;
+
+    turnoEditando =
+        Number(participante.id);
+
+    const botao =
+        document.querySelector(
+            "#form-ordem-turnos button[type='submit']"
+        );
+
+    if (botao) {
+        botao.textContent =
+            "Salvar alteração";
+    }
+
+    campoNome.focus();
+}
+
+// ======================================================
+// LIMPAR FORMULÁRIO
+// ======================================================
+
+function limparFormularioTurno() {
+
+    const formulario =
+        document.getElementById(
+            "form-ordem-turnos"
+        );
+
+    if (formulario) {
+        formulario.reset();
+    }
+
+    turnoEditando =
+        null;
+
+    const botao =
+        document.querySelector(
+            "#form-ordem-turnos button[type='submit']"
+        );
+
+    if (botao) {
+        botao.textContent =
+            "Adicionar";
+    }
+}
+
+// ======================================================
+// EXCLUIR PARTICIPANTE
+// ======================================================
+
+async function excluirTurno(id) {
+
+    const participante =
+        ordemTurnosCache.find(
+            item =>
+                Number(item.id) ===
+                Number(id)
+        );
+
+    if (!participante) {
+        return;
+    }
+
+    if (
+        !confirm(
+            `Deseja excluir "${participante.nome}" da ordem de turnos?`
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+                `/api/ordem-turnos/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+        const dados =
+            await resposta
+                .json()
+                .catch(() => null);
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados?.erro ||
+                "Erro ao excluir participante."
+            );
+        }
+
+        if (
+            turnoEditando !== null &&
+            Number(turnoEditando) === Number(id)
+        ) {
+            limparFormularioTurno();
+        }
+
+        await carregarOrdemTurnos();
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao excluir participante:",
+            erro
+        );
+
+        alert(
+            "Não foi possível excluir o participante."
+        );
+    }
+}
+
+// ======================================================
+// LIMPAR TODA A ORDEM
+// ======================================================
+
+async function limparOrdemTurnos() {
+
+    if (
+        !confirm(
+            "Deseja realmente limpar toda a ordem de turnos?"
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+                "/api/ordem-turnos",
+                {
+                    method: "DELETE"
+                }
+            );
+
+        const dados =
+            await resposta
+                .json()
+                .catch(() => null);
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados?.erro ||
+                "Erro ao limpar ordem de turnos."
+            );
+        }
+
+        limparFormularioTurno();
+
+        await carregarOrdemTurnos();
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao limpar ordem:",
+            erro
+        );
+
+        alert(
+            "Não foi possível limpar a ordem de turnos."
+        );
+    }
+}
+
+// ======================================================
+// INICIALIZAÇÃO DA ORDEM
+// ======================================================
+
+function inicializarOrdemTurnos() {
+
+    const formulario =
+        document.getElementById(
+            "form-ordem-turnos"
+        );
+
+    const botaoLimpar =
+        document.getElementById(
+            "limpar-ordem"
+        );
+
+    if (formulario) {
+
+        formulario.addEventListener(
+            "submit",
+            salvarTurno
+        );
+    }
+
+    if (botaoLimpar) {
+
+        botaoLimpar.addEventListener(
+            "click",
+            limparOrdemTurnos
+        );
+    }
+
+    carregarOrdemTurnos();
+}
+
+// ======================================================
+// MODO MESTRE / PLAYERS
+// ======================================================
+
+function inicializarModoPlayers() {
+    const botao =
+        document.getElementById(
+            "alternar-modo-players"
+        );
+
+    const ordem =
+        document.getElementById(
+            "ordem-turnos"
+        );
+
+    if (
+        !botao ||
+        !ordem
+    ) {
+        return;
+    }
+
+    botao.addEventListener(
+        "click",
+        () => {
+            ordem.classList.toggle(
+                "modo-players"
+            );
+
+            const modoPlayers =
+                ordem.classList.contains(
+                    "modo-players"
+                );
+
+            botao.textContent =
+                modoPlayers
+                    ? "Modo Mestre"
+                    : "Modo Players";
+        }
+    );
+}
+
+// ======================================================
+// EXPOR FUNÇÕES
+// ======================================================
+
+window.rolarDados = rolarDados;
+window.selecionarDado = selecionarDado;
+window.limparRolagem = limparRolagem;
+
+window.gerarMissao = gerarMissao;
+window.copiarMissao = copiarMissao;
+window.salvarMissao = salvarMissao;
+window.limparMissao = limparMissao;
+window.carregarHistorico = carregarHistorico;
+
+window.gerarEstoque = gerarEstoque;
+window.copiarEstoque = copiarEstoque;
+window.limparEstoque = limparEstoque;
+
+window.mostrarAba = mostrarAba;
+
+window.editarNPC = editarNPC;
+window.excluirNPC = excluirNPC;
+window.carregarNPCs = carregarNPCs;
+window.gerarNPCIA = gerarNPCIA;
+
+window.editarCriatura = editarCriatura;
+window.excluirCriatura = excluirCriatura;
+window.carregarCriaturas = carregarCriaturas;
+window.pesquisarCriaturas = pesquisarCriaturas;
+
+window.editarItem = editarItem;
+window.excluirItem = excluirItem;
+window.carregarItens = carregarItens;
+window.pesquisarItens = pesquisarItens;
+
+// ======================================================
+// ORDEM DE TURNOS
+// ======================================================
+
+window.salvarTurno = salvarTurno;
+window.limparFormularioTurno = limparFormularioTurno;
+window.editarTurno = editarTurno;
+window.excluirTurno = excluirTurno;
+window.limparOrdemTurnos = limparOrdemTurnos;
+
+// ======================================================
+// DOM CONTENT LOADED
+// ======================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        iniciarRolador3D();
+
+        carregarNPCs();
+
+        inicializarAnotacoes();
+
+        inicializarCriaturas();
+
+        inicializarItens();
+
+        inicializarOrdemTurnos();
+
+        inicializarModoPlayers();
+
+    }
+);

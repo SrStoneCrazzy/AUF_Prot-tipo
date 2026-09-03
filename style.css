@@ -3846,3 +3846,466 @@ option {
     }
 
 }
+
+/* =========================================================
+   ORDEM DE TURNOS
+   ========================================================= */
+
+#ordem-turnos .layout {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 18px;
+    align-items: start;
+}
+
+
+/* =========================================================
+   CONTROLE DE MODO
+   ========================================================= */
+
+#ordem-turnos .ordem-controle-modo {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+#ordem-turnos #alternar-modo-players {
+    min-width: 140px;
+    height: 34px;
+    padding: 0 14px;
+
+    border: 1px solid rgba(190, 60, 255, 0.35);
+    background: rgba(190, 60, 255, 0.08);
+    color: #fff;
+
+    cursor: pointer;
+}
+
+#ordem-turnos #alternar-modo-players:hover {
+    background: rgba(190, 60, 255, 0.16);
+    border-color: rgba(190, 60, 255, 0.65);
+}
+
+
+/* =========================================================
+   FORMULÁRIO
+   ========================================================= */
+
+#ordem-turnos #form-ordem-turnos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   CAMPOS
+   ========================================================= */
+
+#ordem-turnos .ordem-campo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#ordem-turnos .ordem-campo label {
+    margin: 0;
+    min-width: 45px;
+
+    color: #bca8c9;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   TIPO
+   ========================================================= */
+
+#ordem-turnos #tipo-turno {
+    width: 100%;
+    height: 34px;
+
+    box-sizing: border-box;
+
+    padding: 7px 10px;
+
+    background: #0d0912;
+    color: #f4edf7;
+
+    border: 1px solid #382044;
+
+    font-family: inherit;
+    font-size: 12px;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+#ordem-turnos #tipo-turno:focus {
+    border-color: #ff1493;
+
+    box-shadow:
+        0 0 0 1px #ff1493,
+        0 0 12px rgba(255, 20, 147, 0.18);
+}
+
+
+/* =========================================================
+   PARTICIPANTE NORMAL
+   ========================================================= */
+
+#ordem-turnos #campo-participante-normal {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        110px;
+
+    gap: 12px;
+}
+
+#ordem-turnos .nome-campo,
+#ordem-turnos .teste-campo {
+    min-width: 0;
+}
+
+#ordem-turnos .nome-campo input {
+    flex: 1;
+    min-width: 0;
+}
+
+#ordem-turnos .teste-campo input {
+    width: 100%;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+#ordem-turnos input {
+    height: 34px;
+
+    box-sizing: border-box;
+
+    padding: 7px 10px;
+
+    background: #0d0912;
+    color: #f4edf7;
+
+    border: 1px solid #382044;
+
+    font-family: inherit;
+    font-size: 12px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+#ordem-turnos input::placeholder {
+    color: #6f6277;
+}
+
+#ordem-turnos input:focus {
+    border-color: #ff1493;
+
+    background: #110b16;
+
+    box-shadow:
+        0 0 0 1px #ff1493,
+        0 0 12px rgba(255, 20, 147, 0.18);
+}
+
+
+/* =========================================================
+   PESQUISA DE CRIATURAS
+   ========================================================= */
+
+#ordem-turnos #campo-pesquisa-criatura {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 6px;
+
+    width: 100%;
+}
+
+#ordem-turnos #campo-pesquisa-criatura label {
+    min-width: auto;
+}
+
+#ordem-turnos #pesquisa-criatura {
+    width: 100%;
+}
+
+
+/* =========================================================
+   RESULTADOS DA PESQUISA
+   ========================================================= */
+
+#ordem-turnos .resultados-criaturas {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    width: 100%;
+
+    max-height: 160px;
+
+    overflow-y: auto;
+}
+
+#ordem-turnos .resultado-criatura {
+    padding: 8px 10px;
+
+    border: 1px solid rgba(190, 60, 255, 0.25);
+
+    background: rgba(255, 255, 255, 0.025);
+
+    color: #fff;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+#ordem-turnos .resultado-criatura:hover {
+    background: rgba(190, 60, 255, 0.12);
+
+    border-color: rgba(190, 60, 255, 0.6);
+}
+
+#ordem-turnos .resultado-criatura.criatura-selecionada {
+    background: rgba(190, 60, 255, 0.15);
+
+    border-color: rgba(220, 70, 255, 0.7);
+}
+
+
+/* =========================================================
+   TESTE DA CRIATURA
+   ========================================================= */
+
+#ordem-turnos #teste-criatura-container {
+    display: flex;
+}
+
+#ordem-turnos #teste-criatura {
+    width: 100%;
+}
+
+
+/* =========================================================
+   BOTÕES
+   ========================================================= */
+
+#ordem-turnos .ordem-botoes {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+
+    margin-top: 4px;
+}
+
+#ordem-turnos .ordem-botoes button {
+    height: 34px;
+}
+
+
+/* =========================================================
+   LINHAS DA ORDEM
+   ========================================================= */
+
+#ordem-turnos #lista-ordem-turnos {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    margin-top: 15px;
+}
+
+#ordem-turnos .ordem-item {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        70px
+        auto;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-height: 38px;
+
+    padding: 7px 10px;
+
+    border: 1px solid rgba(190, 60, 255, 0.18);
+
+    background: rgba(255, 255, 255, 0.025);
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+#ordem-turnos .ordem-item:hover {
+    border-color: rgba(190, 60, 255, 0.4);
+
+    background: rgba(190, 60, 255, 0.035);
+}
+
+#ordem-turnos .ordem-nome {
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #eee7f0;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+#ordem-turnos .ordem-teste {
+    text-align: center;
+
+    color: #f0e8f2;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+#ordem-turnos .ordem-acoes {
+    display: flex;
+
+    gap: 6px;
+}
+
+#ordem-turnos .ordem-acoes button {
+    height: 28px;
+
+    padding: 5px 9px;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   FICHA DE COMBATE
+   ========================================================= */
+
+#ordem-turnos .ficha-combate {
+    margin-top: 18px;
+}
+
+#ordem-turnos #conteudo-ficha-combate {
+    min-height: 40px;
+}
+
+
+/* =========================================================
+   MODO PLAYERS
+   ========================================================= */
+
+#ordem-turnos.modo-players .ficha-combate {
+    display: none !important;
+}
+
+#ordem-turnos.modo-players #form-ordem-turnos {
+    display: none !important;
+}
+
+#ordem-turnos.modo-players #limpar-ordem {
+    display: none !important;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    #ordem-turnos .layout {
+        grid-template-columns: 1fr;
+    }
+
+    #ordem-turnos #campo-participante-normal {
+        grid-template-columns: 1fr;
+    }
+
+    #ordem-turnos .teste-campo input {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    #ordem-turnos .ordem-campo {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+    #ordem-turnos .ordem-campo label {
+        min-width: auto;
+    }
+
+    #ordem-turnos .ordem-botoes {
+        grid-template-columns: 1fr;
+    }
+
+    #ordem-turnos .ordem-item {
+        grid-template-columns: 1fr;
+    }
+
+    #ordem-turnos .ordem-teste {
+        text-align: left;
+    }
+
+}
+
+body {
+    background-image:
+        linear-gradient(
+            rgba(5, 2, 12, 0.78),
+            rgba(5, 2, 12, 0.78)
+        ),
+        url("./wallpaperauf.jpg") !important;
+
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
+}

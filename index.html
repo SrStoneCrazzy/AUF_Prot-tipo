@@ -94,311 +94,317 @@
 
         <button
             class="tab"
-            onclick="mostrarAba('anotacoes', this)">
+            onclick="mostrarAba('anotacoes', this)"
+        >
             Anotações
         </button>
 
         <button
             class="tab"
-            onclick="mostrarAba('criaturas', this)">
+            onclick="mostrarAba('criaturas', this)"
+        >
             Criaturas
         </button>
 
         <button
             class="tab"
-            onclick="mostrarAba('itens', this)">
+            onclick="mostrarAba('itens', this)"
+        >
             Itens
+        </button>
+
+        <button
+            class="tab"
+            onclick="mostrarAba('ordem-turnos', this)"
+        >
+            Ordem de Turnos
         </button>
 
     </nav>
 
-    <section id="itens" class="aba">
 
-    <div class="layout">
+    <!-- ================================================= -->
+    <!-- ITENS -->
+    <!-- ================================================= -->
 
-        <!-- ==========================================
-             NOVO ITEM
-             ========================================== -->
+    <section
+        id="itens"
+        class="aba"
+    >
 
-        <main class="panel">
+        <div class="layout">
 
-            <div class="panel-title">
-                Novo item
-            </div>
+            <main class="panel">
 
-            <form id="form-item">
-
-                <label for="nome-item">
-                    Nome
-                </label>
-
-                <input
-                    type="text"
-                    id="nome-item"
-                    placeholder="Nome do item"
-                    required
-                >
-
-
-                <label for="tipo-item">
-                    Tipo
-                </label>
-
-                <select
-                    id="tipo-item"
-                    required
-                >
-
-                    <option value="normal">
-                        Objeto normal
-                    </option>
-
-                    <option value="amaldiçoado">
-                        Objeto amaldiçoado
-                    </option>
-
-                </select>
-
-
-                <label for="categoria-item">
-                    Categoria
-                </label>
-
-                <input
-                    type="text"
-                    id="categoria-item"
-                    placeholder="Ex.: Arma, ferramenta, consumível..."
-                    required
-                >
-
-
-                <label for="descricao-item">
-                    Descrição
-                </label>
-
-                <textarea
-                    id="descricao-item"
-                    placeholder="Descrição do objeto..."
-                    required
-                ></textarea>
-
-
-                <label for="efeito-item">
-                    Efeito
-                </label>
-
-                <textarea
-                    id="efeito-item"
-                    placeholder="Efeito especial, se houver..."
-                ></textarea>
-
-
-                <button
-                    type="submit"
-                    class="primary"
-                >
-                    Salvar item
-                </button>
-
-            </form>
-
-        </main>
-
-
-        <!-- ==========================================
-             ITENS SALVOS
-             ========================================== -->
-
-        <aside class="panel">
-
-            <div class="panel-title">
-                Itens salvos
-            </div>
-
-
-            <input
-                type="text"
-                id="pesquisa-item"
-                placeholder="Pesquisar itens..."
-            >
-
-
-            <div id="lista-itens">
-
-                <div class="muted">
-                    Carregando itens...
+                <div class="panel-title">
+                    Novo item
                 </div>
 
-            </div>
+                <form id="form-item">
 
-        </aside>
+                    <label for="nome-item">
+                        Nome
+                    </label>
 
-    </div>
+                    <input
+                        type="text"
+                        id="nome-item"
+                        placeholder="Nome do item"
+                        required
+                    >
 
-</section>
 
-    <section id="criaturas" class="aba">
+                    <label for="tipo-item">
+                        Tipo
+                    </label>
 
-    <div class="layout">
+                    <select
+                        id="tipo-item"
+                        required
+                    >
 
-        <!-- ==========================================
-             NOVA CRIATURA
-             ========================================== -->
+                        <option value="normal">
+                            Objeto normal
+                        </option>
 
-        <main class="panel">
+                        <option value="amaldiçoado">
+                            Objeto amaldiçoado
+                        </option>
 
-            <div class="panel-title">
-                Nova criatura
-            </div>
+                    </select>
 
-            <form id="form-criatura">
 
-                <label for="nome-criatura">
-                    Nome
-                </label>
+                    <label for="categoria-item">
+                        Categoria
+                    </label>
+
+                    <input
+                        type="text"
+                        id="categoria-item"
+                        placeholder="Ex.: Arma, ferramenta, consumível..."
+                        required
+                    >
+
+
+                    <label for="descricao-item">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="descricao-item"
+                        placeholder="Descrição do objeto..."
+                        required
+                    ></textarea>
+
+
+                    <label for="efeito-item">
+                        Efeito
+                    </label>
+
+                    <textarea
+                        id="efeito-item"
+                        placeholder="Efeito especial, se houver..."
+                    ></textarea>
+
+
+                    <button
+                        type="submit"
+                        class="primary"
+                    >
+                        Salvar item
+                    </button>
+
+                </form>
+
+            </main>
+
+
+            <aside class="panel">
+
+                <div class="panel-title">
+                    Itens salvos
+                </div>
 
                 <input
                     type="text"
-                    id="nome-criatura"
-                    placeholder="Nome da criatura"
-                    required
+                    id="pesquisa-item"
+                    placeholder="Pesquisar itens..."
                 >
 
+                <div id="lista-itens">
 
-                <label for="elemento-criatura">
-                    Elemento
-                </label>
-
-                <input
-                    type="text"
-                    id="elemento-criatura"
-                    placeholder="Elemento"
-                    required
-                >
-
-
-                <label for="elemento-secundario-criatura">
-                    Elemento secundário
-                </label>
-
-                <input
-                    type="text"
-                    id="elemento-secundario-criatura"
-                    placeholder="Opcional"
-                >
-
-
-                <div class="criatura-campos">
-
-                    <div>
-
-                        <label for="vd-criatura">
-                            VD
-                        </label>
-
-                        <input
-                            type="number"
-                            id="vd-criatura"
-                            min="0"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div>
-
-                        <label for="vida-criatura">
-                            Vida
-                        </label>
-
-                        <input
-                            type="number"
-                            id="vida-criatura"
-                            min="0"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div>
-
-                        <label for="defesa-criatura">
-                            Defesa
-                        </label>
-
-                        <input
-                            type="number"
-                            id="defesa-criatura"
-                            min="0"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div>
-
-                        <label for="deslocamento-criatura">
-                            Deslocamento
-                        </label>
-
-                        <input
-                            type="text"
-                            id="deslocamento-criatura"
-                            placeholder="9m"
-                            required
-                        >
-
+                    <div class="muted">
+                        Carregando itens...
                     </div>
 
                 </div>
 
+            </aside>
 
-                <button
-                    type="submit"
-                    class="primary"
-                >
-                    Salvar criatura
-                </button>
+        </div>
 
-            </form>
-
-        </main>
+    </section>
 
 
-        <!-- ==========================================
-             CRIATURAS SALVAS
-             ========================================== -->
+    <!-- ================================================= -->
+    <!-- CRIATURAS -->
+    <!-- ================================================= -->
 
-        <aside class="panel">
+    <section
+        id="criaturas"
+        class="aba"
+    >
 
-            <div class="panel-title">
-                Criaturas salvas
-            </div>
+        <div class="layout">
 
+            <main class="panel">
 
-            <input
-                type="text"
-                id="pesquisa-criatura"
-                placeholder="Pesquisar criaturas..."
-            >
-
-
-            <div id="lista-criaturas">
-
-                <div class="muted">
-                    Carregando criaturas...
+                <div class="panel-title">
+                    Nova criatura
                 </div>
 
-            </div>
+                <form id="form-criatura">
 
-        </aside>
+                    <label for="nome-criatura">
+                        Nome
+                    </label>
 
-    </div>
+                    <input
+                        type="text"
+                        id="nome-criatura"
+                        placeholder="Nome da criatura"
+                        required
+                    >
 
-</section>
+
+                    <label for="elemento-criatura">
+                        Elemento
+                    </label>
+
+                    <input
+                        type="text"
+                        id="elemento-criatura"
+                        placeholder="Elemento"
+                        required
+                    >
+
+
+                    <label for="elemento-secundario-criatura">
+                        Elemento secundário
+                    </label>
+
+                    <input
+                        type="text"
+                        id="elemento-secundario-criatura"
+                        placeholder="Opcional"
+                    >
+
+
+                    <div class="criatura-campos">
+
+                        <div>
+
+                            <label for="vd-criatura">
+                                VD
+                            </label>
+
+                            <input
+                                type="number"
+                                id="vd-criatura"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label for="vida-criatura">
+                                Vida
+                            </label>
+
+                            <input
+                                type="number"
+                                id="vida-criatura"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label for="defesa-criatura">
+                                Defesa
+                            </label>
+
+                            <input
+                                type="number"
+                                id="defesa-criatura"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label for="deslocamento-criatura">
+                                Deslocamento
+                            </label>
+
+                            <input
+                                type="text"
+                                id="deslocamento-criatura"
+                                placeholder="9m"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary"
+                    >
+                        Salvar criatura
+                    </button>
+
+                </form>
+
+            </main>
+
+
+            <aside class="panel">
+
+                <div class="panel-title">
+                    Criaturas salvas
+                </div>
+
+                <input
+                    type="text"
+                    id="pesquisa-criatura"
+                    placeholder="Pesquisar criaturas..."
+                >
+
+                <div id="lista-criaturas">
+
+                    <div class="muted">
+                        Carregando criaturas...
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </section>
 
 
     <!-- ================================================= -->
@@ -675,7 +681,6 @@
                     Adicionar NPC
                 </div>
 
-
                 <form id="form-npc">
 
                     <label for="nome">
@@ -728,7 +733,6 @@
                     NPCs cadastrados
                 </div>
 
-
                 <input
                     type="text"
                     id="pesquisa-npc"
@@ -771,8 +775,6 @@
 
                 <div class="special">
 
-                    <!-- FACÇÃO -->
-
                     <label>
 
                         Facção
@@ -808,8 +810,6 @@
                     </label>
 
 
-                    <!-- GÊNERO -->
-
                     <label>
 
                         Gênero
@@ -832,8 +832,6 @@
 
                     </label>
 
-
-                    <!-- SEXUALIDADE -->
 
                     <label>
 
@@ -862,8 +860,6 @@
                     </label>
 
 
-                    <!-- IDADE -->
-
                     <label>
 
                         Idade
@@ -890,8 +886,6 @@
 
                     </label>
 
-
-                    <!-- PERSONALIDADE -->
 
                     <label>
 
@@ -927,7 +921,6 @@
                 <div class="panel-title">
                     NPC gerado
                 </div>
-
 
                 <div
                     id="resultadoNPCIA"
@@ -966,10 +959,6 @@
                     Rolador de Dados
                 </div>
 
-
-                <!-- =============================== -->
-                <!-- SELETOR DE DADOS -->
-                <!-- =============================== -->
 
                 <div class="dice-selector">
 
@@ -1019,20 +1008,12 @@
                 </div>
 
 
-                <!-- =============================== -->
-                <!-- ÁREA DO DADO 3D -->
-                <!-- =============================== -->
-
                 <div
                     id="dice-stage"
                     class="dice-stage"
                 >
                 </div>
 
-
-                <!-- =============================== -->
-                <!-- CONFIGURAÇÕES -->
-                <!-- =============================== -->
 
                 <div class="special">
 
@@ -1066,10 +1047,6 @@
                 </div>
 
 
-                <!-- =============================== -->
-                <!-- DADO SELECIONADO -->
-                <!-- =============================== -->
-
                 <div class="selected-dice">
 
                     Dado selecionado:
@@ -1080,10 +1057,6 @@
 
                 </div>
 
-
-                <!-- =============================== -->
-                <!-- BOTÕES -->
-                <!-- =============================== -->
 
                 <div class="buttons">
 
@@ -1105,16 +1078,11 @@
             </main>
 
 
-            <!-- =============================== -->
-            <!-- RESULTADO -->
-            <!-- =============================== -->
-
             <aside class="panel">
 
                 <div class="panel-title">
                     Resultado
                 </div>
-
 
                 <div
                     id="resultadoRolagem"
@@ -1135,66 +1103,183 @@
 
     </section>
 
-    <section id="anotacoes" class="aba">
+
+    <!-- ================================================= -->
+    <!-- ANOTAÇÕES -->
+    <!-- ================================================= -->
+
+    <section
+        id="anotacoes"
+        class="aba"
+    >
+
+        <div class="layout">
+
+            <main class="panel">
+
+                <div class="panel-title">
+                    Nova anotação
+                </div>
+
+                <form id="form-anotacao">
+
+                    <label for="titulo-anotacao">
+                        Título
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo-anotacao"
+                        placeholder="Título da anotação"
+                        required
+                    >
+
+
+                    <label for="conteudo-anotacao">
+                        Conteúdo
+                    </label>
+
+                    <textarea
+                        id="conteudo-anotacao"
+                        placeholder="Escreva sua anotação..."
+                        required
+                    ></textarea>
+
+
+                    <button
+                        type="submit"
+                        class="primary"
+                    >
+                        Salvar anotação
+                    </button>
+
+                </form>
+
+            </main>
+
+
+            <aside class="panel">
+
+                <div class="panel-title">
+                    Anotações salvas
+                </div>
+
+                <input
+                    type="text"
+                    id="pesquisa-anotacao"
+                    placeholder="Pesquisar anotações..."
+                >
+
+                <div id="lista-anotacoes">
+
+                    <div class="muted">
+                        Carregando anotações...
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </section>
+
+<!-- ================================================= -->
+<!-- ORDEM DE TURNOS -->
+<!-- ================================================= -->
+
+<section
+    id="ordem-turnos"
+    class="aba">
+
+    <div class="ordem-controle-modo">
+
+    <button
+        type="button"
+        id="alternar-modo-players"
+    >
+        Modo Players
+    </button>
+
+    </div>
 
     <div class="layout">
+
+        <!-- ========================================== -->
+        <!-- ADICIONAR PARTICIPANTE -->
+        <!-- ========================================== -->
 
         <main class="panel">
 
             <div class="panel-title">
-                Nova anotação
+                Adicionar participante
             </div>
 
-            <form id="form-anotacao">
 
-                <label for="titulo-anotacao">
-                    Título
-                </label>
+           <form id="form-ordem-turnos">
 
-                <input
-                    type="text"
-                    id="titulo-anotacao"
-                    placeholder="Título da anotação"
-                    required
-                >
+    <div class="ordem-campo">
+        <label for="nome-turno">
+            Participante
+        </label>
 
-                <label for="conteudo-anotacao">
-                    Conteúdo
-                </label>
+        <input
+            type="text"
+            id="nome-turno"
+            placeholder="Nome do participante"
+            autocomplete="off"
+            required
+        >
+    </div>
 
-                <textarea
-                    id="conteudo-anotacao"
-                    placeholder="Escreva sua anotação..."
-                    required
-                ></textarea>
+    <div class="ordem-campo">
+        <label for="teste-turno">
+            Iniciativa
+        </label>
 
-                <button
-                    type="submit"
-                    class="primary">
-                    Salvar anotação
-                </button>
+        <input
+            type="number"
+            id="teste-turno"
+            placeholder="Iniciativa"
+            required
+        >
+    </div>
 
-            </form>
+    <div class="ordem-acoes-form">
+        <button
+            type="submit"
+        >
+            Adicionar
+        </button>
+
+        <button
+            type="button"
+            id="limpar-ordem"
+        >
+            Limpar
+        </button>
+    </div>
+
+</form>
 
         </main>
 
 
+        <!-- ========================================== -->
+        <!-- ORDEM -->
+        <!-- ========================================== -->
+
         <aside class="panel">
 
             <div class="panel-title">
-                Anotações salvas
+                Ordem de Turnos
             </div>
 
-            <input
-                type="text"
-                id="pesquisa-anotacao"
-                placeholder="Pesquisar anotações..."
-            >
 
-            <div id="lista-anotacoes">
+            <div id="lista-ordem-turnos">
 
                 <div class="muted">
-                    Carregando anotações...
+                    Carregando ordem de turnos...
                 </div>
 
             </div>
@@ -1203,9 +1288,32 @@
 
     </div>
 
+
+    <!-- ============================================== -->
+    <!-- FICHA DE COMBATE -->
+    <!-- ============================================== -->
+
+    <div
+        id="ficha-combate"
+        class="panel ficha-combate"
+        style="display: none;"
+    >
+
+        <div class="panel-title">
+            Ficha de Combate
+        </div>
+
+
+        <div id="conteudo-ficha-combate">
+
+        </div>
+
+    </div>
+
 </section>
 
 </div>
+
 
 <script
     type="module"
